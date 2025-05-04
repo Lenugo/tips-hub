@@ -1,16 +1,13 @@
-import express, { Request, Response } from 'express'
+import express from 'express'
 import dotenv from 'dotenv'
 
+import advicesRoutes from './routes/advices.route'
+
 dotenv.config()
-
 const app = express()
+app.use(express.json())
 
-const PORT = process.env.PORT || 3001
+/** Routes */
+app.use('/advices', advicesRoutes)
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('Hello World!')
-})
-
-app.listen(PORT, () => {
-  console.log(`Running on http://localhost:${PORT}`)
-})
+export default app
