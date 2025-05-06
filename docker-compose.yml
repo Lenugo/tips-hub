@@ -16,6 +16,8 @@ services:
     build: ./frontend
     container_name: tips-hub-frontend
     restart: unless-stopped
+    env_file:
+      - ./backend/.env
     ports:
       - "5173:5173"
     volumes:
@@ -24,13 +26,15 @@ services:
       - backend
 
   mongo:
-    image: mongo:6
+    image: mongo
     container_name: tips-hub-db
     restart: unless-stopped
+    env_file:
+      - ./backend/.env
     ports:
       - "27017:27017"
     volumes:
-      - mongo-data:/data/db
+      - ./backend/mongo-data:/data/db
 
 volumes:
   mongo-data:

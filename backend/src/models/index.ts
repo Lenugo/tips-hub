@@ -1,1 +1,0 @@
-export * as Advice from './advice.model'

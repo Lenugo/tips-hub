@@ -40,6 +40,6 @@ adviceSchema.pre('save', function(next) {
   }
 });
 
-const Advice = mongoose.model("Advice", adviceSchema)
+const AdviceModel = mongoose.model("Advice", adviceSchema)
 
-export default Advice
+export default AdviceModel
