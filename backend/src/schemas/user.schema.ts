@@ -1,6 +1,6 @@
 import { object, string, minLength, maxLength, optional, InferOutput, pipe } from 'valibot'
 
-const UserValidationObjectSchema = object({
+export const UserValidationObjectSchema = object({
   _id: optional(string()),
   username: pipe(
     string(),

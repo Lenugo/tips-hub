@@ -2,11 +2,12 @@ import { Request, Response } from "express"
 import User from "../models/user.model";
 import { hashPasword, comparePassword } from "../services/password.service"
 import { generateToken } from "../services/auth.service";
-import { registerSchema, loginSchema } from "../schemas/auth.schema"
+import { RegisterObjectSchema, LoginObjectSchema } from "../schemas/auth.schema"
+import { validateSchema } from "../utils/validationSchema.utils";
 
 export const register = async (req: Request, res: Response) => {
   try {
-    const result = registerSchema(req)
+    const result = validateSchema(RegisterObjectSchema, req.body)
 
     if (!result.success) {
       res.status(400).json({
@@ -60,7 +61,7 @@ export const register = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
   try {
-    const result = loginSchema(req)
+    const result = validateSchema(LoginObjectSchema, req.body)
 
     if (!result.success) {
       res.status(400).json({
