@@ -1,6 +1,7 @@
-import mongoose from "mongoose"
+import mongoose from 'mongoose'
+import { envs } from '../config/envs'
 
-const URI = `mongodb://localhost:27017/${process.env.MONGO_DB_NAME}`
+const URI = `mongodb://localhost:27017/${envs.MONGO_DB_NAME}`
 
 /**
  * Connect to MongoDB

@@ -1,12 +1,14 @@
 import { Router } from 'express'
-import { getAllAdvices, createAdvice, getAdviceById, updateAdvice, deleteAdvice } from '../controllers/advice.controller'
+import { getAllAdvices, createAdvice, getAdviceById, updateAdvice, deleteAdvice, getAllAdvicesByUser, incrementLikes } from '../controllers/advice.controller'
 import { authenticateToken } from '../middlewares/user.middleware'
 
 const router = Router()
 
 router.get('/', authenticateToken, getAllAdvices)
-router.post('/', authenticateToken, createAdvice)
+router.get('/user', authenticateToken, getAllAdvicesByUser)
 router.get('/:id', authenticateToken, getAdviceById)
+router.post('/', authenticateToken, createAdvice)
+router.post('/likes/:id', authenticateToken, incrementLikes)
 router.patch('/:id', authenticateToken, updateAdvice)
 router.delete('/:id', authenticateToken, deleteAdvice)
 

@@ -1,4 +1,4 @@
-import { email, minLength, object, string, pipe, SafeParseResult } from 'valibot';
+import { email, minLength, object, string, pipe } from 'valibot';
 
 export const RegisterObjectSchema = object({
   email: pipe(

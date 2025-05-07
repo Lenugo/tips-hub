@@ -1,7 +1,6 @@
 import { type UserSchemaType } from '../schemas/user.schema'
 import jwt from 'jsonwebtoken'
-
-export const JWT_SECRET = process.env.JWT_SECRET ?? 'unkown'
+import { envs } from '../config/envs'
 
 /**
  * 
@@ -12,8 +11,8 @@ export const generateToken = (user: UserSchemaType): string => {
   try {
     const token = jwt.sign(
       { id: user._id, email: user.email },
-      JWT_SECRET,
-      { expiresIn: '1d' }
+      envs.JWT_SECRET,
+      { expiresIn: '1d', algorithm: 'HS256' }
     )
 
     return token

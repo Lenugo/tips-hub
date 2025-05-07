@@ -5,17 +5,18 @@ import { createValidationMiddleware } from '../middlewares/validation.middleware
 const adviceSchema = new mongoose.Schema({
   title: { type: String, required: true, trim: true },
   content: { type: String, required: true, trim: true },
-  author: { type: String, required: true, trim: true },
+  author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   publishedDate: { type: Date, default: Date.now },
   category: { type: [String], default: [], required: true },
   likes: { type: Number, default: 0 },
+  likedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 }, { timestamps: true })
 
 /** Add validation middleware */
 adviceSchema.pre('save', createValidationMiddleware(
   AdviceValidationObjectSchema,
-  ['title', 'content', 'author', 'category', 'likes']
-));
+  ['title', 'content', 'category', 'likes']
+))
 
 const AdviceModel = mongoose.model('Advice', adviceSchema)
 
