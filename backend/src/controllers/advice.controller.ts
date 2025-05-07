@@ -1,27 +1,80 @@
 import { Request, Response } from 'express'
 import Advice from '../models/advice.model'
-import { AdviceValidationObjectSchema, AdviceType, AdviceUpdateValidationSchema, AdviceUpdateType } from '../schemas/advice.schema'
-import { validateSchema } from '../utils/validationSchema.utils'
-import { validateObjectId, handleValidationError, transformAdviceData } from '../utils/validation.utils'
+import {
+  AdviceValidationObjectSchema,
+  AdviceType,
+  AdviceUpdateValidationSchema,
+  AdviceUpdateType
+} from '../schemas/advice.schema'
+import {
+  validateObjectId,
+  handleValidationError,
+  transformAdviceData,
+  validateSchema
+} from '../utils/validation.utils'
+import { 
+  buildQueryObject, 
+  buildSortOptions, 
+  initializeQueryBuilder, 
+  parsePaginationParams, 
+  applyPagination, 
+  prepareResponse,
+  extractQueryParams,
+  validateQueryParams
+} from '../utils/advice.utils'
 
 export const getAllAdvices = async (req: Request, res: Response): Promise<void> => {
   try {
-    const advices = await Advice.find()
-    if (!advices) {
-      res.status(404).json({ success: false, error: 'Advices not found' })
+    
+    if (!validateQueryParams(req, res)) {
+      return // If validation fails, response is already sent
+    }
+    
+    // Extract query parameters
+    const { category, page, limit, sortBy, order } = extractQueryParams(req)
+    
+    // Build query and sort objects
+    const query = buildQueryObject(category)
+    const sortOptions = buildSortOptions(sortBy, order)
+
+    // Initialize query builder
+    let queryBuilder = initializeQueryBuilder(Advice, query, sortOptions)
+    
+    // Parse pagination parameters
+    const { pageNum, limitNum } = parsePaginationParams(page, limit)
+    
+    // Apply pagination if needed
+    const { queryBuilder: paginatedQueryBuilder, paginationData } = 
+      await applyPagination(Advice, query, queryBuilder, pageNum, limitNum)
+    
+    // Execute the query
+    const advices = await paginatedQueryBuilder
+
+    if (!advices || advices.length === 0) {
+      res.status(404).json({ 
+        success: false, 
+        error: 'No advices found matching the criteria' 
+      })
       return
     }
 
     const dataToSend = advices.map(transformAdviceData)
-    res.status(200).json({ success: true, data: dataToSend })
+    
+    const response = prepareResponse(dataToSend, paginationData)
+    
+    res.status(200).json(response)
   } catch (error) {
-    res.status(500).json({ success: false, error: 'Server Error' })
+    console.error('Get all advices error:', error)
+    res.status(500).json({ 
+      success: false, 
+      error: 'An error occurred while fetching advices' 
+    })
   }
 }
 
 export const getAllAdvicesByUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    const advices = await Advice.find({ author: req.user?.id })
+    const advices = await Advice.find({ author: req.user?.id }).populate('author', 'username email')
     if (!advices) {
       res.status(404).json({ success: false, error: 'Advices not found' })
       return

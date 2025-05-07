@@ -6,7 +6,7 @@ export type IAdvice = {
   content: string;
   author: mongoose.Types.ObjectId;
   publishedDate: Date;
-  category: string[];
+  categories: string[];
   likes: number;
   likedBy: mongoose.Types.ObjectId[];
   createdAt: Date;

@@ -1,9 +1,9 @@
 import { Request, Response } from 'express'
-import User from '../models/user.model';
+import User from '../models/user.model'
 import { hashPasword, comparePassword } from '../services/password.service'
-import { generateToken } from '../services/auth.service';
+import { generateToken } from '../services/auth.service'
 import { RegisterObjectSchema, LoginObjectSchema } from '../schemas/auth.schema'
-import { validateSchema } from '../utils/validationSchema.utils';
+import { validateSchema } from '../utils/validation.utils'
 
 export const register = async (req: Request, res: Response) => {
   try {

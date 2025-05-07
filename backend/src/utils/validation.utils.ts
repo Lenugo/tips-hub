@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
-import { Request, Response } from 'express'
-import { SafeParseResult, ObjectSchema } from 'valibot'
+import { Response } from 'express'
+import { BaseSchema, SafeParseResult, safeParse, ObjectSchema } from 'valibot';
 
 import { IAdvice } from '../types/advice.type'
 
@@ -10,18 +10,28 @@ import { IAdvice } from '../types/advice.type'
  * @returns A transformed advice object with renamed fields
  */
 export const transformAdviceData = (advice: IAdvice) => {
-  const { _id, title, content, author, publishedDate, category, likes, likedBy, createdAt } = advice
+  const { _id, title, content, author, publishedDate, categories, likes, likedBy, createdAt } = advice
   return {
     id: _id,
     title,
     content,
     author,
     publishedDate,
-    category,
+    categories,
     likes,
     likedBy,
     createdAt
   }
+}
+
+/**
+ * Generic validation function that works with any Valibot schema
+ * @param schema The Valibot schema to validate against
+ * @param data The data to validate
+ * @returns A SafeParseResult containing either the validated data or validation errors
+ */
+export function validateSchema<T extends BaseSchema<any, any, any>>(schema: T, data: unknown): SafeParseResult<T> {
+  return safeParse(schema, data);
 }
 
 /**
