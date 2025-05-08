@@ -21,7 +21,7 @@ onMounted(() => {
   <div class="min-h-screen flex flex-col">
     <TheNavbar />
     
-    <main class="flex-grow">
+    <main class="flex-grow px-4 md:px-36">
       <router-view v-slot="{ Component }">
         <transition name="fade" mode="out-in">
           <component :is="Component" />

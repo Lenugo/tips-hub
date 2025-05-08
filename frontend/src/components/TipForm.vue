@@ -121,14 +121,14 @@ const handleCancel = () => {
 <template>
   <form @submit.prevent="handleSubmit" class="space-y-4">
     <div>
-      <label for="title" class="block text-sm font-medium text-gray-700 mb-1">
+      <label for="title" class="block text-sm font-medium text-slate-700 mb-1">
         Título
       </label>
       <input
         id="title"
         v-model="form.title"
         type="text"
-        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+        class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-teal-500 focus:border-teal-500"
         :class="{ 'border-red-500': errors.title }"
         placeholder="Un título claro y conciso"
       />
@@ -136,14 +136,14 @@ const handleCancel = () => {
     </div>
     
     <div>
-      <label for="content" class="block text-sm font-medium text-gray-700 mb-1">
+      <label for="content" class="block text-sm font-medium text-slate-700 mb-1">
         Contenido
       </label>
       <textarea
         id="content"
         v-model="form.content"
         rows="6"
-        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+        class="w-full px-3 py-2 border resize-none border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-teal-500 focus:border-teal-500"
         :class="{ 'border-red-500': errors.content }"
         placeholder="Comparte tu consejo detalladamente..."
       ></textarea>
@@ -151,7 +151,7 @@ const handleCancel = () => {
     </div>
     
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">
+      <label class="block text-sm font-medium text-slate-700 mb-1">
         Categorías existentes
       </label>
       <div class="flex flex-wrap gap-2 mb-3">
@@ -160,14 +160,14 @@ const handleCancel = () => {
           :key="category"
           type="button"
           @click="selectExistingCategory(category)"
-          class="px-3 py-1 text-sm rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200"
-          :class="{ 'bg-primary-100 text-primary-700': selectedCategories.includes(category) }"
+          class="px-3 py-1 text-sm rounded-full bg-lime-100 text-slate-700 hover:bg-lime-200 hover:cursor-pointer"
+          :class="{ 'bg-teal-100 text-teal-700': selectedCategories.includes(category) }"
         >
           {{ category }}
         </button>
       </div>
       
-      <label for="category" class="block text-sm font-medium text-gray-700 mb-1">
+      <label for="category" class="block text-sm font-medium text-slate-700 mb-1">
         Añadir categoría
       </label>
       <div class="flex">
@@ -176,7 +176,7 @@ const handleCancel = () => {
           ref="categoryInput"
           v-model="form.category"
           type="text"
-          class="flex-grow px-3 py-2 border border-gray-300 rounded-l-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+          class="flex-grow px-3 py-2 border border-slate-300 rounded-l-md shadow-sm focus:outline-none focus:ring focus:ring-teal-500 focus:border-teal-500"
           :class="{ 'border-red-500': errors.category }"
           placeholder="Nueva categoría..."
           @keyup.enter="addCategory"
@@ -184,7 +184,7 @@ const handleCancel = () => {
         <button
           type="button"
           @click="addCategory"
-          class="px-4 py-2 bg-primary-500 text-white rounded-r-md hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+          class="px-4 py-2 bg-teal-500 text-white rounded-r-md hover:bg-teal-600 focus:outline-none focus:ring focus:ring-teal-500 focus:ring-offset-2"
         >
           Añadir
         </button>
@@ -193,18 +193,18 @@ const handleCancel = () => {
     </div>
     
     <div v-if="selectedCategories.length > 0" class="mt-2">
-      <p class="text-sm text-gray-700 mb-2">Categorías seleccionadas:</p>
+      <p class="text-sm text-slate-700 mb-2">Categorías seleccionadas:</p>
       <div class="flex flex-wrap gap-2">
         <div 
           v-for="category in selectedCategories" 
           :key="category"
-          class="flex items-center px-3 py-1 rounded-full bg-primary-100 text-primary-700"
+          class="flex items-center px-3 py-1 rounded-full bg-teal-100 text-teal-700"
         >
           <span>{{ category }}</span>
           <button
             type="button"
             @click="removeCategory(category)"
-            class="ml-1 text-primary-700 hover:text-primary-900 focus:outline-none"
+            class="ml-1 text-teal-700 hover:text-teal-900 focus:outline-none"
           >
             &times;
           </button>
@@ -212,17 +212,17 @@ const handleCancel = () => {
       </div>
     </div>
     
-    <div class="flex justify-end space-x-4 pt-4 border-t border-gray-200">
+    <div class="flex justify-end space-x-4 pt-4 border-t border-slate-200">
       <button
         type="button"
         @click="handleCancel"
-        class="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+        class="px-4 py-2 text-slate-700 bg-slate-100 rounded-md hover:bg-slate-200 focus:outline-none focus:ring focus:ring-slate-500 focus:ring-offset-2"
       >
         Cancelar
       </button>
       <button
         type="submit"
-        class="px-4 py-2 bg-primary-500 text-white rounded-md hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+        class="px-4 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600 focus:outline-none focus:ring focus:ring-teal-500 focus:ring-offset-2"
       >
         Guardar
       </button>

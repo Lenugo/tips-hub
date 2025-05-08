@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -41,24 +41,23 @@ const router = createRouter({
   ],
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {
-      return savedPosition;
+      return savedPosition
     } else {
-      return { top: 0 };
+      return { top: 0 }
     }
   }
-});
+})
 
 // Navigation guard
 router.beforeEach((to, from, next) => {
-  const isLoggedIn = !!localStorage.getItem('user');
-  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+  const isLoggedIn = !!localStorage.getItem('user')
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
 
   if (requiresAuth && !isLoggedIn) {
-    // Redirect to home if auth is required but user is not logged in
-    next('/');
+    next('/')
   } else {
-    next();
+    next()
   }
-});
+})
 
-export default router;
+export default router

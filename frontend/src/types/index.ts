@@ -28,3 +28,25 @@ export interface ApiResponse<T> {
   success: boolean;
   data: T;
 }
+
+export enum ConsejosCategoria {
+  SaludYBienestar = "Salud y bienestar",
+  DineroYFinanzas = "Dinero y finanzas",
+  RelacionesPersonales = "Relaciones personales",
+  CarreraYDesarrolloPersonal = "Carrera profesional y desarrollo personal",
+  CrecimientoEmocionalYEspiritual = "Crecimiento emocional y espiritual",
+  TiempoLibreYProductividad = "Tiempo libre y productividad",
+  EducacionYAprendizaje = "Educación y aprendizaje",
+  EstiloDeVidaYModa = "Estilo de vida y moda"
+}
+
+export enum AdviceCategory {
+  HealthAndWellness = "Health and Wellness",
+  MoneyAndFinance = "Money and Finance",
+  PersonalRelationships = "Personal Relationships",
+  CareerAndPersonalDevelopment = "Career and Personal Development",
+  EmotionalAndSpiritualGrowth = "Emotional and Spiritual Growth",
+  FreeTimeAndProductivity = "Free Time and Productivity",
+  EducationAndLearning = "Education and Learning",
+  LifestyleAndFashion = "Lifestyle and Fashion"
+}

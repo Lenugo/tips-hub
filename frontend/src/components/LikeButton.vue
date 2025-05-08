@@ -1,30 +1,30 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch } from 'vue'
 
 const props = defineProps<{
-  isLiked: boolean;
-  count: number;
-}>();
+  isLiked: boolean
+  count: number
+}>()
 
 const emit = defineEmits<{
-  (e: 'click', event: MouseEvent): void;
-}>();
+  (e: 'click', event: MouseEvent): void
+}>()
 
-const liked = ref(props.isLiked);
-const likeCount = ref(props.count);
+const liked = ref(props.isLiked)
+const likeCount = ref(props.count)
 
 // Update component state when props change
 watch(() => props.isLiked, (newValue) => {
-  liked.value = newValue;
-});
+  liked.value = newValue
+})
 
 watch(() => props.count, (newValue) => {
-  likeCount.value = newValue;
-});
+  likeCount.value = newValue
+})
 
 const handleClick = (event: MouseEvent) => {
-  emit('click', event);
-};
+  emit('click', event)
+}
 </script>
 
 <template>

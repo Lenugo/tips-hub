@@ -1,32 +1,32 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
-import { useIntersectionObserver } from '@vueuse/core';
-import { useTipsStore } from '../stores/tips';
-import { useUserStore } from '../stores/user';
-import TipCard from '../components/TipCard.vue';
-import CategoryFilter from '../components/CategoryFilter.vue';
-import LoginModal from '../components/modals/LoginModal.vue';
+import { ref, computed, onMounted } from 'vue'
+import { useIntersectionObserver } from '@vueuse/core'
+import { useTipsStore } from '../stores/tips'
+import { useUserStore } from '../stores/user'
+import TipCard from '../components/TipCard.vue'
+import CategoryFilter from '../components/CategoryFilter.vue'
+import AuthModal from '../components/modals/AuthModal.vue'
 
-const tipsStore = useTipsStore();
-const userStore = useUserStore();
+const tipsStore = useTipsStore()
+const userStore = useUserStore()
 
-const isLoginModalOpen = ref(false);
-const target = ref(null);
-const displayCount = ref(3);
-const isLoading = ref(false);
+const isLoginModalOpen = ref(false)
+const target = ref(null)
+const displayCount = ref(3)
+const isLoading = ref(false)
 
 // Mock infinite scroll data loading
 const loadMoreTips = async () => {
-  if (isLoading.value) return;
+  if (isLoading.value) return
   
-  isLoading.value = true;
+  isLoading.value = true
   
   // Simulate a network request
-  await new Promise(resolve => setTimeout(resolve, 800));
+  await new Promise(resolve => setTimeout(resolve, 800))
   
   // Increment the display count (simulating fetching more data)
-  displayCount.value += 2;
-  isLoading.value = false;
+  displayCount.value += 2
+  isLoading.value = false
 };
 
 // Setup intersection observer for infinite scrolling
@@ -34,56 +34,56 @@ const { stop } = useIntersectionObserver(
   target,
   ([{ isIntersecting }]) => {
     if (isIntersecting) {
-      loadMoreTips();
+      loadMoreTips()
     }
   }
-);
+)
 
-const categories = computed(() => tipsStore.categories);
-const selectedCategory = computed(() => tipsStore.selectedCategory);
+const categories = computed(() => tipsStore.categories)
+const selectedCategory = computed(() => tipsStore.selectedCategory)
 
 // Filtered and limited tips for display
 const displayedTips = computed(() => {
-  return tipsStore.filteredTips.slice(0, displayCount.value);
-});
+  return tipsStore.filteredTips.slice(0, displayCount.value)
+})
 
 // Handle category selection
 const handleCategorySelect = (category: string | null) => {
-  tipsStore.setCategory(category);
+  tipsStore.setCategory(category)
   // Reset display count when changing categories
-  displayCount.value = 3;
+  displayCount.value = 3
 };
 
 // Handle like button click
 const handleLike = (tipId: string) => {
   if (userStore.isLoggedIn) {
-    tipsStore.likeTip(tipId, userStore.currentUser?._id || '');
+    tipsStore.likeTip(tipId, userStore.currentUser?._id || '')
   } else {
-    isLoginModalOpen.value = true;
+    isLoginModalOpen.value = true
   }
 };
 
 const closeLoginModal = () => {
-  isLoginModalOpen.value = false;
-};
+  isLoginModalOpen.value = false
+}
 
 const handleLogin = () => {
-  userStore.login();
-  closeLoginModal();
-};
+  userStore.login()
+  closeLoginModal()
+}
 
 onMounted(() => {
   // Initialize tips on component mount if needed
   if (tipsStore.tips.length === 0) {
-    tipsStore.initializeTips();
+    tipsStore.initializeTips()
   }
-});
+})
 </script>
 
 <template>
   <div class="container mx-auto py-6 px-4">
-    <h1 class="text-2xl font-bold text-gray-900 mb-2">Tips Hub</h1>
-    <p class="text-gray-600 mb-6">Descubre y comparte consejos sobre diversos temas</p>
+    <h1 class="text-2xl font-bold text-slate-900 mb-2">Tips Hub</h1>
+    <p class="text-slate-600 mb-6">Descubre y comparte consejos sobre diversos temas</p>
     
     <!-- Categories filter -->
     <CategoryFilter 
@@ -110,40 +110,32 @@ onMounted(() => {
         v-if="displayedTips.length < tipsStore.filteredTips.length"
       >
         <div v-if="isLoading" class="animate-pulse flex space-x-2">
-          <div class="w-2 h-2 rounded-full bg-primary-400"></div>
-          <div class="w-2 h-2 rounded-full bg-primary-500"></div>
-          <div class="w-2 h-2 rounded-full bg-primary-600"></div>
+          <div class="w-2 h-2 rounded-full bg-teal-400"></div>
+          <div class="w-2 h-2 rounded-full bg-teal-500"></div>
+          <div class="w-2 h-2 rounded-full bg-teal-600"></div>
         </div>
-        <span v-else class="text-gray-500 text-sm">Scroll para cargar más</span>
-      </div>
-      
-      <!-- End of feed message -->
-      <div 
-        v-else-if="displayedTips.length > 0" 
-        class="text-center py-8 text-gray-500"
-      >
-        No hay más consejos por mostrar
+        <span v-else class="text-slate-500 text-sm">Scroll para cargar más</span>
       </div>
     </div>
     
     <!-- Empty state -->
     <div v-else class="text-center py-12">
       <div class="mb-4 text-4xl">🔍</div>
-      <h3 class="text-xl font-medium text-gray-800 mb-2">No se encontraron consejos</h3>
-      <p class="text-gray-600 mb-4">
+      <h3 class="text-xl font-medium text-slate-800 mb-2">No se encontraron consejos</h3>
+      <p class="text-slate-600 mb-4">
         No hay consejos disponibles para la categoría seleccionada.
       </p>
       <button 
         @click="handleCategorySelect(null)" 
-        class="btn btn-primary"
+        class="btn btn-teal"
       >
         Ver todos los consejos
       </button>
     </div>
     
-    <!-- Login modal -->
-    <LoginModal 
+    <AuthModal 
       v-if="isLoginModalOpen" 
+      mode="login"
       @close="closeLoginModal" 
       @login="handleLogin"
     />

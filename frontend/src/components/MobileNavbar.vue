@@ -31,30 +31,32 @@ const navigate = (path: string, requiresAuth: boolean = false) => {
 </script>
 
 <template>
-  <nav class="md:hidden fixed bottom-0 w-full bg-white border-t border-gray-200 z-30">
-    <div class="grid grid-cols-3 h-16">
-      <template v-for="item in navItems" :key="item.name">
-        <button 
-          v-if="!item.requiresAuth || isLoggedIn"
-          @click="navigate(item.path, item.requiresAuth)"
-          class="flex flex-col items-center justify-center"
-          :class="{ 'text-primary-600 font-medium': isActive(item.path), 'text-gray-500': !isActive(item.path) }"
-        >
-          <span class="text-lg">{{ item.icon }}</span>
-          <span class="text-xs mt-1">{{ item.name }}</span>
-        </button>
-        <button 
-          v-else-if="item.path === '/create'"
-          @click="navigate('/')"
-          class="flex flex-col items-center justify-center text-gray-500"
-        >
-          <span class="text-lg">{{ item.icon }}</span>
-          <span class="text-xs mt-1">{{ item.name }}</span>
-        </button>
-      </template>
-    </div>
-  </nav>
-  
-  <!-- Add padding to ensure content isn't hidden behind the navbar on mobile -->
-  <div class="h-16 md:h-0 w-full"></div>
+  <div>
+    <nav class="md:hidden fixed bottom-0 w-full bg-white border-t border-slate-200 z-30">
+      <div class="grid grid-cols-3 h-16">
+        <template v-for="item in navItems" :key="item.name">
+          <button 
+            v-if="!item.requiresAuth || isLoggedIn"
+            @click="navigate(item.path, item.requiresAuth)"
+            class="flex flex-col items-center justify-center"
+            :class="{ 'text-teal-600 font-medium': isActive(item.path), 'text-slate-500': !isActive(item.path) }"
+          >
+            <span class="text-lg">{{ item.icon }}</span>
+            <span class="text-xs mt-1">{{ item.name }}</span>
+          </button>
+          <button 
+            v-else-if="item.path === '/create'"
+            @click="navigate('/')"
+            class="flex flex-col items-center justify-center text-slate-500"
+          >
+            <span class="text-lg">{{ item.icon }}</span>
+            <span class="text-xs mt-1">{{ item.name }}</span>
+          </button>
+        </template>
+      </div>
+    </nav>
+    
+    <!-- Add padding to ensure content isn't hidden behind the navbar on mobile -->
+    <div class="h-16 md:h-0 w-full"></div>
+  </div>
 </template>

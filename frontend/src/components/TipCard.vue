@@ -1,55 +1,55 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useRouter } from 'vue-router';
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
-import { useUserStore } from '../stores/user';
-import type { Tip } from '../types';
-import LikeButton from './LikeButton.vue';
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { format } from 'date-fns'
+import { es } from 'date-fns/locale'
+import { useUserStore } from '../stores/user'
+import type { Tip } from '../types'
+import LikeButton from './LikeButton.vue'
 
 const props = defineProps<{
-  tip: Tip;
-  detailed?: boolean;
-}>();
+  tip: Tip
+  detailed?: boolean
+}>()
 
 const emit = defineEmits<{
-  (e: 'like', tipId: string): void;
-}>();
+  (e: 'like', tipId: string): void
+}>()
 
-const router = useRouter();
-const userStore = useUserStore();
+const router = useRouter()
+const userStore = useUserStore()
 
 const formattedDate = computed(() => {
   try {
-    return format(new Date(props.tip.publishedDate), 'PP', { locale: es });
+    return format(new Date(props.tip.publishedDate), 'PP', { locale: es })
   } catch (error) {
-    return 'Fecha desconocida';
+    return 'Fecha desconocida'
   }
-});
+})
 
 const isLiked = computed(() => {
-  return userStore.hasLikedTip(props.tip.likedBy);
-});
+  return userStore.hasLikedTip(props.tip.likedBy)
+})
 
 const truncatedContent = computed(() => {
-  if (props.detailed) return props.tip.content;
+  if (props.detailed) return props.tip.content
   
-  const maxLength = 150;
-  if (props.tip.content.length <= maxLength) return props.tip.content;
+  const maxLength = 150
+  if (props.tip.content.length <= maxLength) return props.tip.content
   
-  return props.tip.content.substring(0, maxLength) + '...';
-});
+  return props.tip.content.substring(0, maxLength) + '...'
+})
 
 const handleCardClick = () => {
   if (!props.detailed) {
-    router.push(`/tip/${props.tip.id}`);
+    router.push(`/tip/${props.tip.id}`)
   }
-};
+}
 
 const handleLikeClick = (event: MouseEvent) => {
-  event.stopPropagation();
-  emit('like', props.tip.id);
-};
+  event.stopPropagation()
+  emit('like', props.tip.id)
+}
 </script>
 
 <template>
@@ -58,7 +58,7 @@ const handleLikeClick = (event: MouseEvent) => {
     :class="{ 'hover:scale-[1.01] transition-transform': !detailed }"
     @click="handleCardClick"
   >
-    <div class="p-4 md:p-6">
+    <div class="p-4 md:p-6 bg-zinc-50">
       <div class="flex justify-between items-start">
         <h3 class="text-xl font-semibold mb-1 text-gray-900">
           {{ tip.title }}
@@ -75,7 +75,7 @@ const handleLikeClick = (event: MouseEvent) => {
         <span 
           v-for="cat in tip.category" 
           :key="cat" 
-          class="px-2 py-1 rounded-full text-xs bg-primary-50 text-primary-700"
+          class="px-2 py-1 rounded-full text-xs bg-teal-50 text-teal-700"
         >
           {{ cat }}
         </span>
@@ -85,7 +85,7 @@ const handleLikeClick = (event: MouseEvent) => {
         {{ truncatedContent }}
       </p>
       
-      <div v-if="!detailed" class="text-primary-600 font-medium text-sm mb-3">
+      <div v-if="!detailed" class="text-teal-600 font-medium text-sm mb-3">
         Leer más...
       </div>
       
