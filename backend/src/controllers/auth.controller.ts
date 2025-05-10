@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import User from '../models/user.model'
 import { hashPasword, comparePassword } from '../services/password.service'
-import { generateToken } from '../services/auth.service'
+import { generateToken, verifyTokenAndGetUser } from '../services/auth.service'
 import { RegisterObjectSchema, LoginObjectSchema } from '../schemas/auth.schema'
 import { validateSchema } from '../utils/validation.utils'
 
@@ -49,7 +49,6 @@ export const register = async (req: Request, res: Response) => {
       httpOnly: true,
       // secure: envs.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 30 * 24 * 60 * 60 * 1000
     })
     
     res.status(201).json({ message: 'User created successfully' })
@@ -100,7 +99,6 @@ export const login = async (req: Request, res: Response) => {
       httpOnly: true,
       // secure: envs.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
     })
 
     res.status(200).json({ message: 'Login successful' })
@@ -150,5 +148,22 @@ export const userProfile = async (req: Request, res: Response) => {
   } catch (error) {
     console.error('User error:', error)
     res.status(500).json({ message: 'Internal server error' })
+  }
+}
+
+export const verifyToken = async (req: Request, res: Response) => {
+  try {
+    const { token } = req.cookies
+    const result = await verifyTokenAndGetUser(token)
+    
+    if (!result || typeof result !== 'object' || !('authenticated' in result) || !result.authenticated) {
+      res.status(401).json(result)
+      return
+    }
+    
+    res.status(200).json(result)
+  } catch (error) {
+    console.error('Token verification error:', error)
+    res.status(500).json({ authenticated: false, message: 'Internal server error' })
   }
 }

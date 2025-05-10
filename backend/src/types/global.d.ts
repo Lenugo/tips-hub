@@ -1,5 +1,4 @@
 import 'express-serve-static-core'
-
 export interface User {
   id:string!;
   username:string!;

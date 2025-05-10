@@ -4,7 +4,7 @@ import { authenticateToken } from '../middlewares/user.middleware'
 
 const router = Router()
 
-router.get('/', authenticateToken, getAllAdvices)
+router.get('/', getAllAdvices)
 router.get('/user', authenticateToken, getAllAdvicesByUser)
 router.get('/:id', authenticateToken, getAdviceById)
 router.post('/', authenticateToken, createAdvice)
