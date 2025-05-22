@@ -6,7 +6,7 @@ const router = Router()
 
 router.get('/', getAllAdvices)
 router.get('/user', authenticateToken, getAllAdvicesByUser)
-router.get('/:id', authenticateToken, getAdviceById)
+router.get('/:id', getAdviceById)
 router.post('/', authenticateToken, createAdvice)
 router.post('/likes/:id', authenticateToken, incrementLikes)
 router.patch('/:id', authenticateToken, updateAdvice)

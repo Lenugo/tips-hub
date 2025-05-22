@@ -27,7 +27,7 @@ export const getAllAdvices = async (req: Request, res: Response): Promise<void> 
   try {
     
     if (!validateQueryParams(req, res)) {
-      return // If validation fails, response is already sent
+      return
     }
     
     // Extract query parameters
@@ -50,7 +50,7 @@ export const getAllAdvices = async (req: Request, res: Response): Promise<void> 
     // Execute the query
     const advices = await paginatedQueryBuilder
 
-    if (!advices || advices.length === 0) {
+    if (!advices) {
       res.status(404).json({ 
         success: false, 
         error: 'No advices found matching the criteria' 
@@ -112,7 +112,7 @@ export const getAdviceById = async (req: Request, res: Response): Promise<void> 
     
     if (!validateObjectId(id, res)) return
     
-    const advice = await Advice.findById(id)
+    const advice = await Advice.findById(id).populate('author', 'username email')
     if (!advice) {
       res.status(404).json({ success: false, error: 'Advice not found' })
       return
