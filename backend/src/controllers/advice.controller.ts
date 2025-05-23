@@ -31,10 +31,10 @@ export const getAllAdvices = async (req: Request, res: Response): Promise<void> 
     }
     
     // Extract query parameters
-    const { category, page, limit, sortBy, order } = extractQueryParams(req)
+    const { categories, page, limit, sortBy, order } = extractQueryParams(req)
     
     // Build query and sort objects
-    const query = buildQueryObject(category)
+    const query = buildQueryObject(categories)
     const sortOptions = buildSortOptions(sortBy, order)
 
     // Initialize query builder
