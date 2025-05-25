@@ -1,12 +1,6 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import type { Tip } from '../types';
-
-interface FormData {
-  title: string;
-  content: string;
-  category: string;
-}
 
 const props = defineProps<{
   initialData?: Partial<Tip>;
@@ -14,56 +8,53 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'submit', formData: { title: string; content: string; category: string[] }): void;
+  (e: 'submit', formData: { title: string; content: string; categories: string[] }): void;
   (e: 'cancel'): void;
 }>();
 
-const form = ref<FormData>({
-  title: props.initialData?.title || '',
-  content: props.initialData?.content || '',
-  category: '',
+// Extraer los datos iniciales del tip
+const initialTitle = props.initialData?.title || '';
+const initialContent = props.initialData?.content || '';
+const initialCategories = Array.isArray(props.initialData?.categories) 
+  ? [...props.initialData.categories] 
+  : [];
+
+// Estado del formulario
+const tipData = ref({
+  title: initialTitle,
+  content: initialContent,
+  categories: [...initialCategories],
 });
 
-const selectedCategories = ref<string[]>(props.initialData?.category || []);
-const categoryInput = ref<HTMLInputElement | null>(null);
 const errors = ref({
   title: '',
   content: '',
   category: ''
 });
 
+const isSubmitting = ref(false);
+
+// Verificar si se han realizado cambios en el formulario
+const hasChanges = computed(() => {
+  return tipData.value.title !== initialTitle ||
+         tipData.value.content !== initialContent ||
+         !areArraysEqual(tipData.value.categories, initialCategories);
+});
+
+// Función auxiliar para comparar arrays
+function areArraysEqual(arr1: string[], arr2: string[]): boolean {
+  if (arr1.length !== arr2.length) return false;
+  
+  const sortedArr1 = [...arr1].sort();
+  const sortedArr2 = [...arr2].sort();
+  
+  return sortedArr1.every((value, index) => value === sortedArr2[index]);
+}
+
 const availableCategories = computed(() => props.categories || []);
 
-const addCategory = () => {
-  const category = form.value.category.trim().toLowerCase();
-  
-  if (!category) {
-    errors.value.category = 'Por favor ingresa una categoría';
-    return;
-  }
-  
-  if (selectedCategories.value.includes(category)) {
-    form.value.category = '';
-    return;
-  }
-  
-  selectedCategories.value.push(category);
-  form.value.category = '';
-  errors.value.category = '';
-  
-  if (categoryInput.value) {
-    categoryInput.value.focus();
-  }
-};
-
 const removeCategory = (category: string) => {
-  selectedCategories.value = selectedCategories.value.filter(c => c !== category);
-};
-
-const selectExistingCategory = (category: string) => {
-  if (!selectedCategories.value.includes(category)) {
-    selectedCategories.value.push(category);
-  }
+  tipData.value.categories = tipData.value.categories.filter(cat => cat !== category);
 };
 
 const validateForm = (): boolean => {
@@ -77,25 +68,25 @@ const validateForm = (): boolean => {
   };
   
   // Title validation
-  if (!form.value.title.trim()) {
+  if (!tipData.value.title.trim()) {
     errors.value.title = 'El título es obligatorio';
     isValid = false;
-  } else if (form.value.title.length < 5) {
+  } else if (tipData.value.title.length < 5) {
     errors.value.title = 'El título debe tener al menos 5 caracteres';
     isValid = false;
   }
   
   // Content validation
-  if (!form.value.content.trim()) {
+  if (!tipData.value.content.trim()) {
     errors.value.content = 'El contenido es obligatorio';
     isValid = false;
-  } else if (form.value.content.length < 20) {
+  } else if (tipData.value.content.length < 20) {
     errors.value.content = 'El contenido debe tener al menos 20 caracteres';
     isValid = false;
   }
   
   // Category validation
-  if (selectedCategories.value.length === 0) {
+  if (tipData.value.categories.length === 0) {
     errors.value.category = 'Debes seleccionar al menos una categoría';
     isValid = false;
   }
@@ -105,13 +96,18 @@ const validateForm = (): boolean => {
 
 const handleSubmit = () => {
   if (validateForm()) {
-    emit('submit', {
-      title: form.value.title,
-      content: form.value.content,
-      category: selectedCategories.value
-    });
+    isSubmitting.value = true;
+    try {
+      emit('submit', {
+        title: tipData.value.title,
+        content: tipData.value.content,
+        categories: tipData.value.categories
+      });
+    } finally {
+      isSubmitting.value = false;
+    }
   }
-};
+}
 
 const handleCancel = () => {
   emit('cancel');
@@ -120,19 +116,24 @@ const handleCancel = () => {
 
 <template>
   <form @submit.prevent="handleSubmit" class="space-y-4">
+    <div v-if="Object.values(errors).some(error => error)" class="p-3 bg-red-50 text-red-600 rounded-md">
+      <p v-if="errors.title">{{ errors.title }}</p>
+      <p v-if="errors.content">{{ errors.content }}</p>
+      <p v-if="errors.category">{{ errors.category }}</p>
+    </div>
+    
     <div>
       <label for="title" class="block text-sm font-medium text-slate-700 mb-1">
         Título
       </label>
       <input
         id="title"
-        v-model="form.title"
+        v-model="tipData.title"
         type="text"
-        class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-teal-500 focus:border-teal-500"
+        class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
         :class="{ 'border-red-500': errors.title }"
         placeholder="Un título claro y conciso"
       />
-      <p v-if="errors.title" class="mt-1 text-sm text-red-500">{{ errors.title }}</p>
     </div>
     
     <div>
@@ -141,72 +142,43 @@ const handleCancel = () => {
       </label>
       <textarea
         id="content"
-        v-model="form.content"
+        v-model="tipData.content"
         rows="6"
-        class="w-full px-3 py-2 border resize-none border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-teal-500 focus:border-teal-500"
+        class="w-full px-3 py-2 border resize-none border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
         :class="{ 'border-red-500': errors.content }"
         placeholder="Comparte tu consejo detalladamente..."
       ></textarea>
-      <p v-if="errors.content" class="mt-1 text-sm text-red-500">{{ errors.content }}</p>
     </div>
     
     <div>
-      <label class="block text-sm font-medium text-slate-700 mb-1">
-        Categorías existentes
-      </label>
-      <div class="flex flex-wrap gap-2 mb-3">
-        <button 
-          v-for="category in availableCategories"
-          :key="category"
-          type="button"
-          @click="selectExistingCategory(category)"
-          class="px-3 py-1 text-sm rounded-full bg-lime-100 text-slate-700 hover:bg-lime-200 hover:cursor-pointer"
-          :class="{ 'bg-teal-100 text-teal-700': selectedCategories.includes(category) }"
-        >
-          {{ category }}
-        </button>
+      <label class="block text-sm font-medium text-slate-700 mb-2">Categorías</label>
+      <div class="grid grid-cols-2 gap-3">
+        <div v-for="category in availableCategories" :key="category" 
+            class="flex items-center p-2 rounded-md transition-colors"
+            :class="tipData.categories.includes(category) ? 'bg-teal-50 border border-teal-200' : 'hover:bg-slate-50 border border-transparent'">
+          <input
+            type="checkbox"
+            :id="category"
+            :value="category"
+            v-model="tipData.categories"
+            class="h-5 w-5 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+          />
+          <label :for="category" class="ml-2 block text-sm font-medium cursor-pointer select-none" 
+                :class="tipData.categories.includes(category) ? 'text-teal-700' : 'text-slate-700'">
+            {{ category }}
+          </label>
+        </div>
       </div>
-      
-      <label for="category" class="block text-sm font-medium text-slate-700 mb-1">
-        Añadir categoría
-      </label>
-      <div class="flex">
-        <input
-          id="category"
-          ref="categoryInput"
-          v-model="form.category"
-          type="text"
-          class="flex-grow px-3 py-2 border border-slate-300 rounded-l-md shadow-sm focus:outline-none focus:ring focus:ring-teal-500 focus:border-teal-500"
-          :class="{ 'border-red-500': errors.category }"
-          placeholder="Nueva categoría..."
-          @keyup.enter="addCategory"
-        />
-        <button
-          type="button"
-          @click="addCategory"
-          class="px-4 py-2 bg-teal-500 text-white rounded-r-md hover:bg-teal-600 focus:outline-none focus:ring focus:ring-teal-500 focus:ring-offset-2"
-        >
-          Añadir
-        </button>
-      </div>
-      <p v-if="errors.category" class="mt-1 text-sm text-red-500">{{ errors.category }}</p>
-    </div>
-    
-    <div v-if="selectedCategories.length > 0" class="mt-2">
-      <p class="text-sm text-slate-700 mb-2">Categorías seleccionadas:</p>
-      <div class="flex flex-wrap gap-2">
-        <div 
-          v-for="category in selectedCategories" 
-          :key="category"
-          class="flex items-center px-3 py-1 rounded-full bg-teal-100 text-teal-700"
-        >
-          <span>{{ category }}</span>
-          <button
-            type="button"
-            @click="removeCategory(category)"
-            class="ml-1 text-teal-700 hover:text-teal-900 focus:outline-none"
-          >
-            &times;
+      <p class="text-xs text-slate-500 mt-2">Selecciona al menos una categoría para tu consejo</p>
+      <div v-if="tipData.categories.length > 0" class="mt-3 flex flex-wrap gap-2">
+        <div v-for="selected in tipData.categories" :key="selected" 
+            class="bg-teal-100 text-teal-800 text-xs font-medium px-2.5 py-1 rounded flex items-center">
+          {{ selected }}
+          <button @click="removeCategory(selected)" type="button" class="ml-1.5 text-teal-700 hover:text-teal-900">
+            <span class="sr-only">Remove</span>
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
           </button>
         </div>
       </div>
@@ -216,15 +188,18 @@ const handleCancel = () => {
       <button
         type="button"
         @click="handleCancel"
-        class="px-4 py-2 text-slate-700 bg-slate-100 rounded-md hover:bg-slate-200 focus:outline-none focus:ring focus:ring-slate-500 focus:ring-offset-2"
+        class="px-4 py-2 text-slate-700 bg-slate-100 rounded-md hover:bg-slate-200 focus:outline-none focus:ring focus:ring-slate-500 focus:ring-offset-2 hover:cursor-pointer"
       >
         Cancelar
       </button>
       <button
         type="submit"
         class="px-4 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600 focus:outline-none focus:ring focus:ring-teal-500 focus:ring-offset-2"
+        :class="{ 'opacity-50 cursor-not-allowed': !hasChanges || isSubmitting, 'cursor-pointer': hasChanges && !isSubmitting }"
+        :disabled="!hasChanges || isSubmitting"
       >
-        Guardar
+        <span v-if="isSubmitting">Editando...</span>
+        <span v-else>Editar</span>
       </button>
     </div>
   </form>

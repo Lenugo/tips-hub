@@ -21,23 +21,32 @@ const userStore = useUserStore()
 
 const formattedDate = computed(() => {
   try {
-    return format(new Date(props.tip.publishedDate), 'PP', { locale: es })
+    const dateToFormat = props.tip.publishedDate || props.tip.createdAt
+    return format(new Date(dateToFormat), 'PP', { locale: es })
   } catch (error) {
-    return 'Fecha desconocida'
+    return 'Date unknown'
   }
 })
 
 const isLiked = computed(() => {
-  return userStore.hasLikedTip(props.tip.likedBy)
+  if (!userStore.isLoggedIn || !userStore.currentUser) {
+    return false
+  }
+  
+  const likedBy = Array.isArray(props.tip.likedBy) ? props.tip.likedBy : []
+  
+  return likedBy.includes(userStore.currentUser.id)
 })
 
 const truncatedContent = computed(() => {
-  if (props.detailed) return props.tip.content
+  const content = props.tip.content || ''
+  
+  if (props.detailed) return content
   
   const maxLength = 150
-  if (props.tip.content.length <= maxLength) return props.tip.content
+  if (content.length <= maxLength) return content
   
-  return props.tip.content.substring(0, maxLength) + '...'
+  return content.substring(0, maxLength) + '...'
 })
 
 const handleCardClick = () => {
@@ -66,14 +75,14 @@ const handleLikeClick = (event: MouseEvent) => {
         
         <LikeButton 
           :is-liked="isLiked" 
-          :count="tip.likes" 
+          :count="tip.likes || 0" 
           @click="handleLikeClick"
         />
       </div>
       
-      <div class="flex space-x-2 mb-3">
+      <div class="flex space-x-2 mb-3" v-if="tip.category">
         <span 
-          v-for="cat in tip.category" 
+          v-for="cat in Array.isArray(tip.category) ? tip.category : [tip.category]" 
           :key="cat" 
           class="px-2 py-1 rounded-full text-xs bg-teal-50 text-teal-700"
         >
@@ -92,6 +101,7 @@ const handleLikeClick = (event: MouseEvent) => {
       <div class="flex justify-between items-center text-sm text-gray-500">
         <span>{{ formattedDate }}</span>
         <span v-if="tip.author">Por: {{ tip.author.username }}</span>
+        <span v-else-if="tip.userName">Por: {{ tip.userName }}</span>
       </div>
     </div>
   </div>

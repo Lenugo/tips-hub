@@ -26,22 +26,6 @@ const closeModal = () => {
   isModalOpen.value = false
 }
 
-const handleLogin = () => {
-  userStore.login()
-  closeModal()
-}
-
-const handleRegister = () => {
-  // In a real app, this would register the user
-  userStore.login() // For demo purposes, just log them in
-  closeModal()
-}
-
-const handleLogout = () => {
-  userStore.logout()
-  router.push('/')
-}
-
 const goToCreateTip = () => {
   if (isLoggedIn.value) {
     router.push('/create')
@@ -65,7 +49,7 @@ const goToProfile = () => {
         </router-link>
         
         <nav class="hidden md:flex items-center space-x-6">
-          <button v-if="isLoggedIn" @click="goToCreateTip" class="px-4 py-2 rounded-full bg-teal-50 text-teal-600 hover:bg-teal-100 transition-colors border border-teal-200 flex items-center">
+          <button v-if="isLoggedIn" @click="goToCreateTip" class="px-4 py-2 rounded-full bg-teal-50 text-teal-600 hover:bg-teal-100 transition-colors border border-teal-200 flex items-center hover:cursor-pointer">
             <span class="mr-1 text-lg">+</span> Nuevo Consejo
           </button>
           
@@ -74,8 +58,8 @@ const goToProfile = () => {
               @click="goToProfile" 
               class="flex items-center text-slate-700 hover:text-teal-600"
             >
-              <div class="h-8 w-8 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-medium">
-                {{ user?.username.charAt(0) }}
+              <div class="h-8 w-8 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-medium hover:cursor-pointer">
+                {{ user?.userName?.charAt(0) }}
               </div>
             </button>          
           </div>
@@ -102,8 +86,6 @@ const goToProfile = () => {
       v-if="isModalOpen" 
       :mode="modalMode"
       @close="closeModal" 
-      @login="handleLogin"
-      @register="handleRegister"
     />
   </div>
 </template>

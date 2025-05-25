@@ -3,7 +3,8 @@ export interface Tip {
   title: string;
   content: string;
   publishedDate: string;
-  category: string[];
+  category?: string[];
+  categories?: string[];
   likes: number;
   likedBy: string[];
   createdAt: string;
@@ -19,8 +20,8 @@ export interface Tip {
 }
 
 export interface User {
-  _id: string;
-  username: string;
+  id: string;
+  userName: string;
   email: string;
 }
 

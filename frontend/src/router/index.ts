@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useUserStore } from '../stores/user'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -31,7 +32,7 @@ const router = createRouter({
       name: 'edit-tip',
       component: () => import('../views/EditTipView.vue'),
       props: true,
-      meta: { requiresAuth: true }
+      // meta: { requiresAuth: true }
     },
     {
       path: '/:pathMatch(.*)*',
@@ -48,12 +49,15 @@ const router = createRouter({
   }
 })
 
-// Navigation guard
-router.beforeEach((to, from, next) => {
-  const isLoggedIn = !!localStorage.getItem('user')
+router.beforeEach(async (to, from, next) => {
+  const userStore = useUserStore()
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
 
-  if (requiresAuth && !isLoggedIn) {
+  if (!userStore.isLoggedIn && !userStore.isLoading) {
+    await userStore.checkAuth()
+  }
+
+  if (requiresAuth && !userStore.isLoggedIn) {
     next('/')
   } else {
     next()

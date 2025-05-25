@@ -16,11 +16,11 @@ const likeCount = ref(props.count)
 // Update component state when props change
 watch(() => props.isLiked, (newValue) => {
   liked.value = newValue
-})
+}, { immediate: true })
 
 watch(() => props.count, (newValue) => {
   likeCount.value = newValue
-})
+}, { immediate: true })
 
 const handleClick = (event: MouseEvent) => {
   emit('click', event)
@@ -30,7 +30,7 @@ const handleClick = (event: MouseEvent) => {
 <template>
   <button 
     @click="handleClick"
-    class="flex items-center space-x-1 focus:outline-none group"
+    class="flex items-center space-x-1 focus:outline-none group hover:cursor-pointer"
     aria-label="Like Tip"
   >
     <span 
