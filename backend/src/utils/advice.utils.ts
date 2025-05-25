@@ -42,7 +42,7 @@ export const validateQueryParams = (req: Request, res: Response): boolean => {
    * @dev This assumes you have a list of valid categories
    * @dev You might want to fetch this from your database or config
    */
-  const validCategories = ['career', 'relationships', 'health', 'finance', 'personal-growth', 'productivity', 'testing']
+  const validCategories = ['career', 'relationships', 'health', 'finance', 'personal-growth', 'productivity', 'education']
   if (categories !== undefined) {
     if (Array.isArray(categories)) {
       for (const cat of categories) {

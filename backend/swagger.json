@@ -1,0 +1,1797 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Tips Hub API",
+    "version": "1.0.0",
+    "description": "Tips Hub API - A comprehensive RESTful service providing seamless management of tips, recommendations and user interactions for the Tips Hub platform. Features include user authentication, tip creation/management, and advanced search capabilities.",
+    "contact": {
+      "name": "Lenugo"
+    }
+  },
+  "host": "localhost:4000",
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Endpoints for user authentication and authorization."
+    },
+    {
+      "name": "Advices",
+      "description": "Endpoints for managing tips and recommendations."
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "securityDefinitions": {
+    "cookieAuth": {
+      "type": "apiKey",
+      "in": "cookie",
+      "name": "token",
+      "description": "Authentication cookie token"
+    }
+  },
+  "paths": {
+    "/advices": {
+      "get": {
+        "tags": [
+          "Advices"
+        ],
+        "description": "Endpoint to get all tips",
+        "parameters": [
+          {
+            "name": "categories",
+            "in": "query",
+            "description": "Filter by categories (comma separated)",
+            "type": "string",
+            "enum": [
+              "career",
+              "relationships",
+              "health",
+              "finance",
+              "personal-growth",
+              "productivity",
+              "education"
+            ]
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number",
+            "type": "integer"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Results limit per page",
+            "type": "integer"
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "description": "Field to sort by",
+            "type": "string"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "Sort order (asc or desc)",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of tips",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "example": "681b67d70a5a4288e934ca73"
+                      },
+                      "title": {
+                        "type": "string",
+                        "example": "Develop your career with passion and purpose"
+                      },
+                      "content": {
+                        "type": "string",
+                        "example": "Your job should not be just about making money; it should be something that fills you and keeps you going forward."
+                      },
+                      "author": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "6819760709e0b7197558d836"
+                          },
+                          "username": {
+                            "type": "string",
+                            "example": "John Doe"
+                          },
+                          "email": {
+                            "type": "string",
+                            "example": "example.mail.com"
+                          }
+                        }
+                      },
+                      "publishedDate": {
+                        "type": "string",
+                        "example": "2025-05-07T14:01:59.307Z"
+                      },
+                      "categories": {
+                        "type": "array",
+                        "example": [
+                          "carrer",
+                          "productivity"
+                        ],
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "likes": {
+                        "type": "number",
+                        "example": 2
+                      },
+                      "likedBy": {
+                        "type": "array",
+                        "example": [
+                          "681fd0c21e96734eb0336be9",
+                          "6819760709e0b7197558d836"
+                        ],
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "example": "2025-05-07T14:01:59.310Z"
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "error": {
+                  "type": "string",
+                  "example": "An error occurred while fetching advices"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Advices"
+        ],
+        "description": "Endpoint to create a new tip",
+        "parameters": [
+          {
+            "name": "obj",
+            "in": "body",
+            "description": "Tip information",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "example": "Advices to enhance your career"
+                },
+                "content": {
+                  "type": "string",
+                  "example": "Set clear and specific goals for each day. Prioritize your tasks based on their importance and urgency. Eliminate distractions during your work hours."
+                },
+                "categories": {
+                  "type": "array",
+                  "example": [
+                    "career",
+                    "productivity"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "title",
+                "content",
+                "categories"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Tip created successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "681b67d70a5a4288e934ca73"
+                    },
+                    "title": {
+                      "type": "string",
+                      "example": "Advices to enhance your career"
+                    },
+                    "content": {
+                      "type": "string",
+                      "example": "Set clear and specific goals for each day. Prioritize your tasks based on their importance and urgency. Eliminate distractions during your work hours."
+                    },
+                    "author": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "6819760709e0b7197558d836"
+                        },
+                        "username": {
+                          "type": "string",
+                          "example": "John Doe"
+                        },
+                        "email": {
+                          "type": "string",
+                          "example": "example@mail.com"
+                        }
+                      }
+                    },
+                    "publishedDate": {
+                      "type": "string",
+                      "example": "2023-01-01T00:00:00.000Z"
+                    },
+                    "categories": {
+                      "type": "array",
+                      "example": [
+                        "career",
+                        "productivity"
+                      ],
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "likes": {
+                      "type": "number",
+                      "example": 0
+                    },
+                    "likedBy": {
+                      "type": "array",
+                      "example": [],
+                      "items": {}
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "2023-01-01T00:00:00.000Z"
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "error": {
+                  "type": "string",
+                  "example": "Validation error"
+                },
+                "errors": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "String must contain at least 3 character(s)"
+                    },
+                    "expected": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "received": {
+                      "type": "string",
+                      "example": "string"
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "error": {
+                  "type": "string",
+                  "example": "Unauthorized"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "error": {
+                  "type": "string",
+                  "example": "Server Error"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ]
+      }
+    },
+    "/advices/user": {
+      "get": {
+        "tags": [
+          "Advices"
+        ],
+        "description": "Endpoint to get all tips by user",
+        "responses": {
+          "200": {
+            "description": "List of user tips",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "example": "681b67d70a5a4288e934ca73"
+                      },
+                      "title": {
+                        "type": "string",
+                        "example": "Develop your career with passion and purpose"
+                      },
+                      "content": {
+                        "type": "string",
+                        "example": "Your job should not be just about making money; it should be something that fills you and keeps you going forward."
+                      },
+                      "author": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "6819760709e0b7197558d836"
+                          },
+                          "username": {
+                            "type": "string",
+                            "example": "John Doe"
+                          },
+                          "email": {
+                            "type": "string",
+                            "example": "example@mail.com"
+                          }
+                        }
+                      },
+                      "publishedDate": {
+                        "type": "string",
+                        "example": "2025-05-07T14:01:59.307Z"
+                      },
+                      "categories": {
+                        "type": "array",
+                        "example": [
+                          "career",
+                          "productivity"
+                        ],
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "likes": {
+                        "type": "number",
+                        "example": 2
+                      },
+                      "likedBy": {
+                        "type": "array",
+                        "example": [
+                          "681fd0c21e96734eb0336be9",
+                          "6819760709e0b7197558d836"
+                        ],
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "example": "2025-05-07T14:01:59.310Z"
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "User ID is required",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "error": {
+                  "type": "string",
+                  "example": "Invalid ID format. Must be a valid MongoDB ObjectId"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "error": {
+                  "type": "string",
+                  "example": "Unauthorized"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Advices not found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "error": {
+                  "type": "string",
+                  "example": "Advices not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "error": {
+                  "type": "string",
+                  "example": "Server Error"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ]
+      }
+    },
+    "/advices/{id}": {
+      "get": {
+        "tags": [
+          "Advices"
+        ],
+        "description": "Endpoint to get a tip by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "MongoDB ObjectId",
+            "description": "Tip ID",
+            "length": 24
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tip found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "681b67d70a5a4288e934ca73"
+                    },
+                    "title": {
+                      "type": "string",
+                      "example": "Develop your career with passion and purpose"
+                    },
+                    "content": {
+                      "type": "string",
+                      "example": "Your job should not be just about making money; it should be something that fills you and keeps you going forward."
+                    },
+                    "author": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "6819760709e0b7197558d836"
+                        },
+                        "username": {
+                          "type": "string",
+                          "example": "John Doe"
+                        },
+                        "email": {
+                          "type": "string",
+                          "example": "example@mail.com"
+                        }
+                      }
+                    },
+                    "publishedDate": {
+                      "type": "string",
+                      "example": "2025-05-07T14:01:59.307Z"
+                    },
+                    "categories": {
+                      "type": "array",
+                      "example": [
+                        "career",
+                        "productivity"
+                      ],
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "likes": {
+                      "type": "number",
+                      "example": 2
+                    },
+                    "likedBy": {
+                      "type": "array",
+                      "example": [
+                        "681fd0c21e96734eb0336be9",
+                        "6819760709e0b7197558d836"
+                      ],
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "2025-05-07T14:01:59.310Z"
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Tip not found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "error": {
+                  "type": "string",
+                  "example": "Advice not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "error": {
+                  "type": "string",
+                  "example": "Server Error"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Advices"
+        ],
+        "description": "Endpoint to update a tip",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Tip ID"
+          },
+          {
+            "name": "obj",
+            "in": "body",
+            "description": "Updated tip information",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "example": "Advices to enhance your career"
+                },
+                "content": {
+                  "type": "string",
+                  "example": "Set clear and specific goals for each day. Prioritize your tasks based on their importance and urgency. Eliminate distractions during your work hours."
+                },
+                "categories": {
+                  "type": "array",
+                  "example": [
+                    "career",
+                    "productivity",
+                    "personal-growth"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tip updated successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "681b67d70a5a4288e934ca73"
+                    },
+                    "title": {
+                      "type": "string",
+                      "example": "Advices to enhance your career"
+                    },
+                    "content": {
+                      "type": "string",
+                      "example": "Set clear and specific goals for each day. Prioritize your tasks based on their importance and urgency. Eliminate distractions during your work hours."
+                    },
+                    "author": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "6819760709e0b7197558d836"
+                        },
+                        "username": {
+                          "type": "string",
+                          "example": "Testing"
+                        },
+                        "email": {
+                          "type": "string",
+                          "example": "test@mail.com"
+                        }
+                      }
+                    },
+                    "publishedDate": {
+                      "type": "string",
+                      "example": "2023-01-01T00:00:00.000Z"
+                    },
+                    "categories": {
+                      "type": "array",
+                      "example": [
+                        "career",
+                        "productivity",
+                        "personal-growth"
+                      ],
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "likes": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "likedBy": {
+                      "type": "array",
+                      "example": [
+                        "6819760709e0b7197558d836"
+                      ],
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "2025-05-07T14:01:59.310Z"
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "error": {
+                  "type": "string",
+                  "example": "Validation error"
+                },
+                "errors": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "String must contain at least 3 character(s)"
+                    },
+                    "expected": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "received": {
+                      "type": "string",
+                      "example": "string"
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "error": {
+                  "type": "string",
+                  "example": "Unauthorized"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Tip not found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "error": {
+                  "type": "string",
+                  "example": "Advice not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "error": {
+                  "type": "string",
+                  "example": "Server Error"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Advices"
+        ],
+        "description": "Endpoint to delete a tip",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Tip ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tip deleted successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Advice deleted"
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Invalid ID format. Must be a valid MongoDB ObjectId"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "error": {
+                  "type": "string",
+                  "example": "Unauthorized"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Tip not found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "error": {
+                  "type": "string",
+                  "example": "Advice not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "error": {
+                  "type": "string",
+                  "example": "Server Error"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ]
+      }
+    },
+    "/advices/likes/{id}": {
+      "post": {
+        "tags": [
+          "Advices"
+        ],
+        "description": "Endpoint to like a tip",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Tip ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Like added successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "681b67d70a5a4288e934ca73"
+                    },
+                    "title": {
+                      "type": "string",
+                      "example": "Develop your career with passion and purpose"
+                    },
+                    "content": {
+                      "type": "string",
+                      "example": "Your job should not be just about making money; it should be something that fills you and keeps you going forward."
+                    },
+                    "author": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "example": "6819760709e0b7197558d836"
+                        },
+                        "username": {
+                          "type": "string",
+                          "example": "Testing"
+                        },
+                        "email": {
+                          "type": "string",
+                          "example": "test@mail.com"
+                        }
+                      }
+                    },
+                    "publishedDate": {
+                      "type": "string",
+                      "example": "2025-05-07T14:01:59.307Z"
+                    },
+                    "categories": {
+                      "type": "array",
+                      "example": [
+                        "career",
+                        "productivity"
+                      ],
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "likes": {
+                      "type": "number",
+                      "example": 3
+                    },
+                    "likedBy": {
+                      "type": "array",
+                      "example": [
+                        "681fd0c21e96734eb0336be9",
+                        "6819760709e0b7197558d836",
+                        "681976f709e0b7197558d837"
+                      ],
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "2025-05-07T14:01:59.310Z"
+                    }
+                  }
+                },
+                "action": {
+                  "type": "string",
+                  "example": "liked"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Invalid ID format. Must be a valid MongoDB ObjectId"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "error": {
+                  "type": "string",
+                  "example": "Unauthorized"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Tip not found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "error": {
+                  "type": "string",
+                  "example": "Advice not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "error": {
+                  "type": "string",
+                  "example": "Server Error"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ]
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "description": "Endpoint to register a new user.",
+        "parameters": [
+          {
+            "name": "user",
+            "in": "path",
+            "description": "Register user",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "obj",
+            "in": "body",
+            "description": "User information.",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "userName": {
+                  "type": "string",
+                  "example": "John Doe"
+                },
+                "email": {
+                  "type": "string",
+                  "example": "example.mail.com"
+                },
+                "password": {
+                  "type": "string",
+                  "example": "PASSWORD1234"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "User created successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "message": {
+                  "type": "string",
+                  "example": "User created successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Validation error"
+                },
+                "errors": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Validation error"
+                    },
+                    "expected": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "received": {
+                      "type": "string",
+                      "example": "number"
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "409": {
+            "description": "User already exists",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "User already exists"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Internal server error"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "description": "Endpoint to login a user.",
+        "parameters": [
+          {
+            "name": "obj",
+            "in": "body",
+            "description": "User information.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "example": "example.mail.com"
+                },
+                "password": {
+                  "type": "string",
+                  "example": "PASSWORD1234"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User logged in successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "message": {
+                  "type": "string",
+                  "example": "User logged in successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Validation error"
+                },
+                "errors": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Validation error"
+                    },
+                    "expected": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "received": {
+                      "type": "string",
+                      "example": "number"
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "User not found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "User not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Internal server error"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "description": "Endpoint to logout a user.",
+        "responses": {
+          "200": {
+            "description": "User logged out successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "message": {
+                  "type": "string",
+                  "example": "User logged out successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Unauthorized"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Internal server error"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/check": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "description": "Endpoint to check if the user is logged in.",
+        "responses": {
+          "200": {
+            "description": "User is logged in",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "authenticated": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "message": {
+                  "type": "string",
+                  "example": "User is logged in"
+                },
+                "user": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "681fd0c21e98734eb0336be7"
+                    },
+                    "userName": {
+                      "type": "string",
+                      "example": "John Doe"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "example@mail.com"
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "authenticated": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Unauthorized"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "authenticated": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Internal server error"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/profile": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "description": "Endpoint to get the user profile.",
+        "responses": {
+          "200": {
+            "description": "User profile",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "user": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "681fd0c21e96834eb0336be8"
+                    },
+                    "userName": {
+                      "type": "string",
+                      "example": "John Doe"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "example.mail.com"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "2023-06-01T00:00:00.000Z"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "example": "2023-06-01T00:00:00.000Z"
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Validation error"
+                },
+                "errors": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Validation error"
+                    },
+                    "expected": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "received": {
+                      "type": "string",
+                      "example": "number"
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Unauthorized"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "User not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Internal server error"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ]
+      }
+    }
+  }
+}

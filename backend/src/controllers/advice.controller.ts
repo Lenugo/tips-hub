@@ -30,24 +30,19 @@ export const getAllAdvices = async (req: Request, res: Response): Promise<void> 
       return
     }
     
-    // Extract query parameters
     const { categories, page, limit, sortBy, order } = extractQueryParams(req)
     
-    // Build query and sort objects
     const query = buildQueryObject(categories)
     const sortOptions = buildSortOptions(sortBy, order)
 
-    // Initialize query builder
     let queryBuilder = initializeQueryBuilder(Advice, query, sortOptions)
     
-    // Parse pagination parameters
     const { pageNum, limitNum } = parsePaginationParams(page, limit)
     
     // Apply pagination if needed
     const { queryBuilder: paginatedQueryBuilder, paginationData } = 
       await applyPagination(Advice, query, queryBuilder, pageNum, limitNum)
     
-    // Execute the query
     const advices = await paginatedQueryBuilder
 
     if (!advices) {
@@ -201,44 +196,38 @@ export const incrementLikes = async (req: Request, res: Response): Promise<void>
     }
 
     // Check if user has already liked this advice
-    // Make sure likedBy exists in your Advice model schema
-    if (advice.likedBy && advice.likedBy.some(id => id.equals(userId))) {
-      res.status(400).json({ 
-        success: false, 
-        error: 'You have already liked this advice' 
-      })
-      return
+    const hasLiked = advice.likedBy && advice.likedBy.some(id => id.equals(userId))
+    
+    let updatedAdvice
+    
+    if (!hasLiked) {
+      updatedAdvice = await Advice.findOneAndUpdate(
+        {  _id: id, likedBy: { $ne: userId } },
+        { $inc: { likes: 1 }, $addToSet: { likedBy: userId } },
+        { new: true, runValidators: true }
+      )
+    } else {
+      updatedAdvice = await Advice.findOneAndUpdate(
+        { _id: id },
+        { $inc: { likes: -1 }, $pull: { likedBy: userId } },
+        { new: true, runValidators: true }
+      )
     }
 
-    // Use findOneAndUpdate with conditions to ensure atomicity
-    const updatedAdvice = await Advice.findOneAndUpdate(
-      { 
-        _id: id,
-        // This ensures the user hasn't liked it yet (race condition protection)
-        likedBy: { $ne: userId } 
-      },
-      { 
-        $inc: { likes: 1 },
-        $addToSet: { likedBy: userId } // $addToSet prevents duplicates
-      },
-      { 
-        new: true,
-        runValidators: true
-      }
-    )
-
-    // If no document was updated, it means the user already liked it
-    // (handles race conditions)
     if (!updatedAdvice) {
       res.status(400).json({ 
         success: false, 
-        error: 'You have already liked this advice' 
+        error: 'Error updating advice.' 
       })
       return
     }
 
     const dataToSend = transformAdviceData(updatedAdvice)
-    res.status(200).json({ success: true, data: dataToSend })
+    res.status(200).json({ 
+      success: true, 
+      data: dataToSend,
+      action: hasLiked ? 'unliked' : 'liked'
+    })
   } catch (error) {
     console.error('Increment likes error:', error)
     res.status(500).json({ success: false, error: 'Server Error' })

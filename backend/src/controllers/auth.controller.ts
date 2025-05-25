@@ -11,6 +11,7 @@ export const register = async (req: Request, res: Response) => {
 
     if (!result.success) {
       res.status(400).json({
+        success: false,
         message: 'Validation error', errors: {
           message: result.issues[0].message,
           expected: result.issues[0].expected,
@@ -24,7 +25,7 @@ export const register = async (req: Request, res: Response) => {
 
     const existingUser = await User.findOne({ email })
     if (existingUser) {
-      res.status(400).json({ message: 'User already exists' })
+      res.status(409).json({ success: false, message: 'User already exists' })
       return
     }
 
@@ -51,10 +52,10 @@ export const register = async (req: Request, res: Response) => {
       sameSite: 'strict',
     })
     
-    res.status(201).json({ message: 'User created successfully' })
+    res.status(201).json({ success: true, message: 'User created successfully' })
   } catch (error) {
     console.error('Register error:', error);
-    res.status(500).json({ message: 'Internal server error' })
+    res.status(500).json({ success: false, message: 'Internal server error' })
   }
 }
 
@@ -64,6 +65,7 @@ export const login = async (req: Request, res: Response) => {
 
     if (!result.success) {
       res.status(400).json({
+        success: false,
         message: 'Validation error', errors: {
           message: result.issues[0].message,
           expected: result.issues[0].expected,
@@ -77,14 +79,14 @@ export const login = async (req: Request, res: Response) => {
 
     const user = await User.findOne({ email });
     if (!user) {
-      res.status(401).json({ message: 'User not found' });
+      res.status(401).json({ success: false, message: 'User not found' });
       return
     }
 
     const isMatch = await comparePassword(password, user.password)
 
     if (!isMatch) {
-      res.status(401).json({ message: 'Invalid credentials' })
+      res.status(401).json({ success: false, message: 'Invalid credentials' })
       return
     }
 
@@ -101,17 +103,17 @@ export const login = async (req: Request, res: Response) => {
       sameSite: 'strict',
     })
 
-    res.status(200).json({ message: 'Login successful' })
+    res.status(200).json({ success: true, message: 'Login successful' })
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ success: false, message: 'Internal server error' });
   }
 }
 
 export const logout = async (req: Request, res: Response) => {
   try {
     if (!req.cookies.token) {
-      res.status(401).json({ message: 'Unauthorized' })
+      res.status(401).json({ success: false, message: 'Unauthorized' })
       return
     }
 
@@ -120,10 +122,10 @@ export const logout = async (req: Request, res: Response) => {
       sameSite: 'strict'
     })
 
-    res.status(200).json({ message: 'Logged out successfully' })
+    res.status(200).json({ success: true, message: 'Logged out successfully' })
   } catch (error) {
     console.error('Logout error:', error)
-    res.status(500).json({ message: 'Internal server error' })
+    res.status(500).json({ success: false, message: 'Internal server error' })
   }
 }
 
@@ -132,11 +134,12 @@ export const userProfile = async (req: Request, res: Response) => {
     const userFound = await User.findById(req.user?.id)
     
     if (!userFound) {
-      res.status(404).json({ message: 'User not found' })
+      res.status(404).json({ success: false, message: 'User not found' })
       return
     }
 
     res.status(200).json({
+      success: true,
       user: {
         id: userFound._id,
         userName: userFound.username,
@@ -147,7 +150,7 @@ export const userProfile = async (req: Request, res: Response) => {
     })
   } catch (error) {
     console.error('User error:', error)
-    res.status(500).json({ message: 'Internal server error' })
+    res.status(500).json({ success: false, message: 'Internal server error' })
   }
 }
 

@@ -49,9 +49,8 @@ export const AdviceUpdateValidationSchema = object({
  * Schema for validating advice query parameters
  */
 export const AdviceQuerySchema = object({
-  // Category can be a string or an array of strings
-  category: optional(union([
-    string(),
+  // Categories can be a string or an array of strings
+  categories: optional(union([
     array(string())
   ])),
   
