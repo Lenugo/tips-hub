@@ -7,7 +7,7 @@
     "dev": "tsnd --respawn --clear src/server.ts",
     "build": "rimraf ./dist && tsc",
     "swagger": "rimraf ./swagger.json && tsnd src/config/swagger.ts --respawn",
-    "start": "node dist/server.js"
+    "start": "pnpm run build && node dist/server.js"
   },
   "keywords": [],
   "author": "",

@@ -118,15 +118,15 @@ The application uses the following environment variables:
 
 ```bash
 # Install dependencies
-npm install
+pnpm install
 ```
 
 ```bash
 # Run in development mode with hot reload
-npm run dev
+pnpm run dev
 ```
 
 ```bash
 # Generate Swagger documentation
-npm run swagger
+pnpm run swagger
 ```
