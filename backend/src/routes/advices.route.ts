@@ -66,7 +66,7 @@ router.get('/', (req, res) => {
       ]
     }
   } */
-  /* swagger.responses[404] = {
+  /* #swagger.responses[404] = {
     description: 'Advices not found',
     schema: {
       success: false,

@@ -165,7 +165,23 @@
             }
           },
           "404": {
-            "description": "Not Found"
+            "description": "Advices not found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "error": {
+                  "type": "string",
+                  "example": "No advices found matching the criteria"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "500": {
             "description": "Internal server error",
