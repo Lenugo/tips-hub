@@ -32,7 +32,7 @@ const router = createRouter({
       name: 'edit-tip',
       component: () => import('../views/EditTipView.vue'),
       props: true,
-      // meta: { requiresAuth: true }
+      meta: { requiresAuth: true }
     },
     {
       path: '/:pathMatch(.*)*',
@@ -53,7 +53,7 @@ router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore()
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
 
-  if (!userStore.isLoggedIn && !userStore.isLoading) {
+  if (requiresAuth && !userStore.isLoggedIn && !userStore.isLoading) {
     await userStore.checkAuth()
   }
 

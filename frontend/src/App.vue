@@ -1,29 +1,79 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router';
-import TheNavbar from './components/TheNavbar.vue';
-import MobileNavbar from './components/MobileNavbar.vue';
-import { useTipsStore } from './stores/tips';
-import { useUserStore } from './stores/user';
+import { onMounted, ref, watch } from 'vue'
+import { TheNavbar, MobileNavbar, ToastNotification } from './components'
+import { useTipsStore } from './stores/tips'
+import { useUserStore } from './stores/user'
 
-const tipsStore = useTipsStore();
-const userStore = useUserStore();
-const route = useRoute();
-const isLoading = ref(true);
+const tipsStore = useTipsStore()
+const userStore = useUserStore()
+const isLoading = ref(true)
+
+enum NotificationType {
+  Success = 'success',
+  Error = 'error',
+  Info = 'info',
+  Warning = 'warning'
+}
+
+const notification = ref({
+  show: false,
+  message: '',
+  type: NotificationType.Info
+})
+
+const showNotification = (message: string, type: NotificationType) => {
+  notification.value = {
+    show: true,
+    message,
+    type
+  }
+
+  setTimeout(() => {
+    handleClose()
+  }, 5000)
+}
+
+const handleClose = () => {
+  notification.value = {
+    show: false,
+    message: '',
+    type: notification.value.type
+  }
+}
+
+watch(() => tipsStore.error, (newTipsError) => {
+  if (newTipsError) {
+    showNotification(newTipsError, NotificationType.Error)
+  }
+})
+
+watch(() => userStore.error, (newUserError) => {
+  if (newUserError) {
+    showNotification(newUserError, NotificationType.Error)
+  }
+})
 
 onMounted(async () => {
   try {
-    await Promise.all([
-      tipsStore.getAllTips(), // Cambiado de initializeTips a getAllTips
-      userStore.checkAuth() // Use checkAuth to verify authentication
-    ]);
+    const [tipsResult, authResult] = await Promise.allSettled([
+      tipsStore.getAllTips(),
+      userStore.checkAuth()
+    ])
+
+    if (tipsResult.status === 'rejected') {
+      showNotification('Failed to fetch tips. Please try again or later', NotificationType.Error)
+    }
+
+    if (authResult.status === 'rejected') {
+      showNotification('Failed to authenticate. Please try again or later', NotificationType.Error)
+    }
+
   } catch (error) {
-    console.error('Failed to initialize app:', error);
+    showNotification('An unexpected error occurred. Please try again or later', NotificationType.Error)
   } finally {
-    // Hide loading indicator when initialization is complete
     isLoading.value = false;
   }
-});
+})
 </script>
 
 <template>
@@ -32,12 +82,20 @@ onMounted(async () => {
     <div v-if="isLoading" class="fixed inset-0 bg-white z-50 flex items-center justify-center">
       <div class="flex flex-col items-center">
         <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500 mb-4"></div>
-        <p class="text-teal-600 font-medium">Cargando...</p>
+        <p class="text-teal-600 font-medium">Loading...</p>
       </div>
     </div>
 
+    <!-- Toast notification -->
+    <ToastNotification
+      :show="notification.show"
+      :message="notification.message"
+      :type="notification.type"
+      @close="handleClose"
+    />
+
     <TheNavbar />
-    
+
     <main class="flex-grow px-4 md:px-36">
       <router-view v-slot="{ Component }">
         <transition name="fade" mode="out-in">

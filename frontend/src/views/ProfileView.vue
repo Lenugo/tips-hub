@@ -3,7 +3,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useUserStore } from '../stores/user'
 import { useTipsStore } from '../stores/tips'
 import { useRouter } from 'vue-router'
-import TipCard from '../components/TipCard.vue'
+import { TipCard } from '../components/'
 
 const userStore = useUserStore()
 const tipsStore = useTipsStore()

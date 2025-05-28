@@ -19,6 +19,23 @@ export interface Tip {
   };
 }
 
+export interface PaginatedResponse<T> {
+  success: boolean;
+  data: T[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    pages: number;
+  };
+}
+
+export interface LikedResponse {
+  success: boolean;
+  data: Tip;
+  action: string;
+}
+
 export interface User {
   id: string;
   userName: string;
@@ -28,6 +45,16 @@ export interface User {
 export interface ApiResponse<T> {
   success: boolean;
   data: T;
+}
+
+export interface TipResponse {
+  success: boolean
+  data: Tip[] | Tip
+}
+
+export interface TipDeleteResponse {
+  success: boolean
+  data: { message: string }
 }
 
 export enum ConsejosCategoria {

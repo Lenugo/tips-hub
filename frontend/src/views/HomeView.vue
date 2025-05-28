@@ -2,9 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useIntersectionObserver } from '@vueuse/core'
 import { useTipsStore } from '../stores/tips'
-import TipCard from '../components/TipCard.vue'
-import CategoryFilter from '../components/CategoryFilter.vue'
-import AuthModal from '../components/modals/AuthModal.vue'
+import { TipCard, CategoryFilter, AuthModal } from '../components'
 
 const tipsStore = useTipsStore();
 const isLoading = ref(false);

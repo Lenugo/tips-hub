@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useTipsStore, type ITipResponse } from '../stores/tips'
+import { useTipsStore } from '../stores/tips'
 import { useUserStore } from '../stores/user'
-import AuthModal from '../components/modals/AuthModal.vue'
-import TipCard from '../components/TipCard.vue'
-import DeleteButton from '../components/DeleteButton.vue'
+import { AuthModal, TipCard, DeleteButton } from '../components'
 
 const route = useRoute()
 const router = useRouter()
@@ -25,7 +23,7 @@ const tip = computed(() => tipsStore.currentTip)
 
 const isUserAuthor = computed(() => {
   if (!userStore.isLoggedIn || !tip.value) return false
-  return tip.value.data.author._id === userStore.currentUser?.id
+  return tip.value?.author?._id === userStore.currentUser?.id
 })
 
 const handleLike = (id: string) => {
@@ -72,9 +70,9 @@ watch(tipId, fetchTip)
       <div class="max-w-3xl mx-auto">
 
         <!-- Categories -->
-        <div v-if="tip.data.categories" class="mb-4 flex flex-wrap gap-2">
+        <div v-if="tip.categories" class="mb-4 flex flex-wrap gap-2">
           <span
-            v-for="cat in tip.data.categories" 
+            v-for="cat in tip.categories" 
             :key="cat" 
             class="px-3 py-1.5 rounded-full text-sm bg-teal-100 text-teal-700 font-medium"
           >
@@ -82,7 +80,7 @@ watch(tipId, fetchTip)
           </span>
         </div>
         
-        <TipCard :tip="tip.data" :detailed="true" @like="handleLike" />
+        <TipCard :tip="tip" :detailed="true" @like="handleLike" />
         
         <div v-if="isUserAuthor" class="mt-4 flex justify-end space-x-4">
           <DeleteButton :tipId="tipId" />

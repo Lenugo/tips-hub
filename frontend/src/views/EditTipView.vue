@@ -3,7 +3,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useTipsStore } from '../stores/tips'
 import { useUserStore } from '../stores/user'
-import TipForm from '../components/TipForm.vue'
+import { TipForm } from '../components'
 import type { Tip } from '../types'
 
 const route = useRoute()

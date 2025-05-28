@@ -128,11 +128,6 @@ const hasLikedTip = (tipId: string, likedByArray?: string[]) => {
   return false
 }
 
-  // Initialize user by checking auth status
-  const initUser = async () => {
-    return await checkAuth()
-  }
-
   return {
     currentUser,
     isLoggedIn,
@@ -143,7 +138,6 @@ const hasLikedTip = (tipId: string, likedByArray?: string[]) => {
     logout,
     checkAuth,
     hasLikedTip,
-    getUserInfo,
-    initUser
+    getUserInfo
   }
 })

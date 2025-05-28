@@ -2,23 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import api from '../utils/api'
 import { useUserStore } from './user'
-
-export interface Tip {
-  id: string
-  title: string
-  content: string
-  categories?: string | string[]
-  userId: string
-  userName?: string
-  likes?: number
-  createdAt: string
-  updatedAt: string
-}
-
-export interface ITipResponse {
-  success: boolean
-  data: Tip
-}
+import type { LikedResponse, PaginatedResponse, Tip, TipResponse, TipDeleteResponse  } from '@/types'
 
 export const useTipsStore = defineStore('tips', () => {
   const tips = ref<Tip[]>([])
@@ -31,6 +15,14 @@ export const useTipsStore = defineStore('tips', () => {
   
   const clearTips = () => {
     tips.value = []
+  }
+
+  const handleErrorTipResponse = (status: number, success: boolean, action: string): boolean => {
+    if (status !== 200 || (status === 200 && !success)) {
+      error.value = `Something went wrong ${action} your tip`
+      return true
+    }
+    return false
   }
 
   const getAllTips = async (category?: string, page: number = 1, limit: number = 10) => {
@@ -53,31 +45,28 @@ export const useTipsStore = defineStore('tips', () => {
         url = `${url}?${params.join('&')}`
       }
       
-      const response = await api.get(url)
+      const { data, status } = await api.get(url)
+      let response: PaginatedResponse<Tip> = data
+
+      if (handleErrorTipResponse(status, response.success, 'getting')) {
+        tips.value = []
+        return { tips: [], pagination: null }
+      }
       
-      if (!response.data || typeof response.data !== 'object') {
+      if (!response.data || !response.data.length) {
         if (page === 1) {
           tips.value = []
         }
         return { tips: [], pagination: null }
       }
       
-      // Extract tips from response
       let newTips: Tip[] = []
-      if (Array.isArray(response.data.data)) {
-        newTips = response.data.data
-      } else {
-        const responseData = Object.values(response.data).filter(Array.isArray)
-        if (responseData.length > 0) {
-          newTips = responseData[0] as Tip[]
-        }
-      }
+      newTips = response.data
       
       // If it's the first page, replace tips; otherwise, append
       if (page === 1) {
         tips.value = newTips
       } else {
-        // Avoid duplicates by checking IDs
         const existingIds = new Set(tips.value.map(tip => tip.id))
         const uniqueNewTips = newTips.filter(tip => !existingIds.has(tip.id))
         tips.value = [...tips.value, ...uniqueNewTips]
@@ -85,11 +74,10 @@ export const useTipsStore = defineStore('tips', () => {
       
       return {
         tips: newTips,
-        pagination: response.data.pagination
+        pagination: response.pagination
       }
-    } catch (err: any) {
-      console.error(err)
-      error.value = err.response?.data?.message || 'Error getting the tips'
+    } catch {
+      error.value = 'Error getting the tips'
       return { tips: [], pagination: null }
     } finally {
       isLoading.value = false
@@ -101,28 +89,23 @@ export const useTipsStore = defineStore('tips', () => {
     error.value = null
     
     try {
-      const response = await api.get('/advices/user')
-      // Verificar que response.data sea un array
-      if (Array.isArray(response.data)) {
-        userTips.value = response.data
-      } else if (response.data && typeof response.data === 'object') {
-        // Si es un objeto, podría tener una propiedad que contiene el array
-        const possibleArrays = Object.values(response.data).filter(Array.isArray)
-        if (possibleArrays.length > 0) {
-          userTips.value = possibleArrays[0] as Tip[]
-        } else {
-          // Si no hay arrays, podría ser un solo objeto
-          userTips.value = [response.data] as Tip[]
-        }
-      } else {
-        // Si no es ni array ni objeto, inicializar como array vacío
+      const { data, status } = await api.get('/advices/user')
+      let response: TipResponse = data
+
+      if (handleErrorTipResponse(status, response.success, 'getting')) {
         userTips.value = []
-        console.error('Formato de respuesta inesperado:', response.data)
+        return
       }
+
+      if (!Array.isArray(response.data) || !response.data.length) {
+        userTips.value = []
+        return
+      }
+
+      userTips.value = response.data as Tip[]
       return userTips.value
-    } catch (err: any) {
-      console.error('Error al obtener los tips del usuario:', err)
-      error.value = err.response?.data?.message || 'Error al cargar tus tips'
+    } catch {
+      error.value = 'Error loading your tips'
       return null
     } finally {
       isLoading.value = false
@@ -134,12 +117,18 @@ export const useTipsStore = defineStore('tips', () => {
     error.value = null
     
     try {
-      const response = await api.get(`/advices/${id}`)
-      currentTip.value = response.data
-      return response.data
-    } catch (err: any) {
-      console.error(`Error al obtener el tip ${id}:`, err)
-      error.value = err.response?.data?.message || 'Error al cargar el tip'
+      const { data, status } = await api.get(`/advices/${id}`)
+      const response: TipResponse = data
+      
+      if (handleErrorTipResponse(status, response.success, 'getting')) {
+        currentTip.value = null
+        return
+      }
+      
+      currentTip.value = response.data as Tip
+      return response
+    } catch {
+      error.value = 'Error getting the tip'
       return null
     } finally {
       isLoading.value = false
@@ -151,11 +140,17 @@ export const useTipsStore = defineStore('tips', () => {
     error.value = null
     
     try {
-      const response = await api.post('/advices', tipData)
+      const { data, status } = await api.post('/advices', tipData)
+      const response: TipResponse = data
+
+      if (handleErrorTipResponse(status, response.success, 'creating')) {
+        return
+      }
+
       await getUserTips()
       return response.data
-    } catch (err: any) {
-      error.value = err.response?.data?.message || 'Error creating the tip'
+    } catch {
+      error.value = 'Error creating tip'
       return null
     } finally {
       isLoading.value = false
@@ -167,7 +162,13 @@ export const useTipsStore = defineStore('tips', () => {
     error.value = null
     
     try {
-      const response = await api.patch(`/advices/${id}`, tipData)
+      const { data, status } = await api.patch(`/advices/${id}`, tipData)
+      const response: TipResponse = data
+
+      if (handleErrorTipResponse(status, response.success, 'updating')) {
+        return
+      }
+
       await getUserTips()
       return response.data
     } catch (err: any) {
@@ -183,11 +184,17 @@ export const useTipsStore = defineStore('tips', () => {
     error.value = null
     
     try {
-      const response = await api.delete(`/advices/${id}`)
+      const { data, status } = await api.delete(`/advices/${id}`)
+      const response: TipDeleteResponse = data
+      
+      if (handleErrorTipResponse(status, response.success, 'removing')) {
+        return
+      }
+
       await getUserTips()
-      return response.data
+      return 'advice deleted successfully'
     } catch (err: any) {
-      error.value = err.response?.data?.message || 'Error deleting the tip'
+      error.value = 'Error removing the tip. Try again or later.'
       return null
     } finally {
       isLoading.value = false
@@ -196,15 +203,21 @@ export const useTipsStore = defineStore('tips', () => {
 
   const likeTip = async (id: string) => {
     try {
-      const response = await api.post(`/advices/likes/${id}`)
-      const { action } = response.data // 'liked' o 'unliked'
+      const { data, status } = await api.post(`/advices/likes/${id}`)
+      let response: LikedResponse = data
+
+      if (handleErrorTipResponse(status, response.success, 'liking')) {
+        return
+      }
+
+      const action = response.action // 'liked' o 'unliked'
       const increment = action === 'liked' ? 1 : -1
       
       const userId = userStore.currentUser?.id
       
       if (!userId) return null
       
-      const updateTipLikeStatus = (tip: any) => {
+      const updateTipLikeStatus = (tip: Tip) => {
         if (!tip) return tip
         
         const likedBy = Array.isArray(tip.likedBy) ? [...tip.likedBy] : []
@@ -228,10 +241,10 @@ export const useTipsStore = defineStore('tips', () => {
       }
       
       if (currentTip.value) {
-        if (currentTip.value.data && currentTip.value.data.id === id) {
+        if (currentTip.value && currentTip.value.id === id) {
           currentTip.value = {
             ...currentTip.value,
-            data: updateTipLikeStatus(currentTip.value.data)
+            ...updateTipLikeStatus(currentTip.value)
           }
         } 
         else if (currentTip.value.id === id) {
@@ -250,7 +263,7 @@ export const useTipsStore = defineStore('tips', () => {
         ]
       }
       
-      const userTipIndex = userTips.value.findIndex(tip => tip.id === id || tip._id === id)
+      const userTipIndex = userTips.value.findIndex(tip => tip.id === id || tip.author?._id === id)
       if (userTipIndex !== -1) {
         const updatedUserTip = updateTipLikeStatus(userTips.value[userTipIndex])
         
@@ -262,8 +275,8 @@ export const useTipsStore = defineStore('tips', () => {
       }
       
       return response.data
-    } catch (err: any) {
-      error.value = err.response?.data?.message || 'Error al actualizar like'
+    } catch {
+      error.value = 'Error updating like'
       return null
     }
   }

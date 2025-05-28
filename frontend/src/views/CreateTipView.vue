@@ -1,15 +1,14 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
-import { useRouter } from 'vue-router';
-import { useTipsStore } from '../stores/tips';
-import { useUserStore } from '../stores/user';
+import { ref, onMounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useTipsStore } from '../stores/tips'
+import { useUserStore } from '../stores/user'
 
-const router = useRouter();
-const tipsStore = useTipsStore();
-const userStore = useUserStore();
-const isLoading = ref(false);
-const isSubmitting = ref(false);
-const error = ref('');
+const router = useRouter()
+const tipsStore = useTipsStore()
+const userStore = useUserStore()
+const isSubmitting = ref(false)
+const error = ref('')
 
 const tipData = ref({
   title: '',
@@ -17,7 +16,7 @@ const tipData = ref({
   categories: [],
 })
 
-const categories = computed(() => tipsStore.categories);
+const categories = computed(() => tipsStore.categories)
 
 onMounted(async () => {
   // Check if user is authenticated
@@ -28,16 +27,16 @@ onMounted(async () => {
       router.push('/login');
     }
   }
-});
+})
 
 const handleSubmit = async () => {
   if (!tipData.value.title || !tipData.value.content) {
-    error.value = 'El título y el contenido son obligatorios';
-    return;
+    error.value = 'El título y el contenido son obligatorios'
+    return
   }
   
-  isSubmitting.value = true;
-  error.value = '';
+  isSubmitting.value = true
+  error.value = ''
   
   try {
     const newTip = {
@@ -46,20 +45,20 @@ const handleSubmit = async () => {
       categories: tipData.value.categories,
     }
     
-    const result = await tipsStore.createTip(newTip);
+    const result = await tipsStore.createTip(newTip)
     if (result) {
-      router.push('/profile');
+      router.push('/profile')
     }
   } catch (err) {
-    console.error('Error creating tip:', err);
-    error.value = 'Error al crear el consejo. Inténtalo de nuevo.';
+    console.error('Error creating tip:', err)
+    error.value = 'Error al crear el consejo. Inténtalo de nuevo.'
   } finally {
-    isSubmitting.value = false;
+    isSubmitting.value = false
   }
 }
 
 const removeCategory = (category: string) => {
-  tipData.value.categories = tipData.value.categories.filter(cat => cat !== category);
+  tipData.value.categories = tipData.value.categories.filter(cat => cat !== category)
 }
 </script>
 
