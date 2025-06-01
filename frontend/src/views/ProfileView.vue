@@ -4,12 +4,14 @@ import { useUserStore } from '../stores/user'
 import { useTipsStore } from '../stores/tips'
 import { useRouter } from 'vue-router'
 import { TipCard } from '../components/'
+import { useI18n } from 'vue-i18n'
 
 const userStore = useUserStore()
 const tipsStore = useTipsStore()
 const router = useRouter()
 const isLoading = ref(true)
 const userData = ref(null)
+const { t, locale } = useI18n()
 
 const userDataTips = computed(() => tipsStore.userTips)
 
@@ -17,7 +19,9 @@ const userDataTips = computed(() => tipsStore.userTips)
 const formattedDate = computed(() => {
   if (!userData.value?.createdAt) return ''
   const date = new Date(userData.value.createdAt)
-  return new Intl.DateTimeFormat('es-ES', { 
+  const dateTimeLocale = locale.value === 'es' ? 'es-ES' : 'en-EN'
+
+  return new Intl.DateTimeFormat(dateTimeLocale, { 
     year: 'numeric', 
     month: 'long', 
     day: 'numeric' 
@@ -79,14 +83,14 @@ const goToCreateTip = () => {
             <div class="mt-4 md:mt-0 md:ml-6 flex-grow">
               <h1 class="text-2xl font-bold text-slate-800">{{ userData?.userName }}</h1>
               <p class="text-slate-500">{{ userData?.email }}</p>
-              <p class="text-sm text-slate-400 mt-1">Miembro desde {{ formattedDate }}</p>
+              <p class="text-sm text-slate-400 mt-1">{{ t('profile.memberSince') }} {{ formattedDate }}</p>
             </div>
             
             <button 
               @click="handleLogout" 
               class="mt-4 md:mt-0 px-4 py-2 bg-red-50 text-red-600 rounded-full hover:bg-red-100 transition-colors text-sm font-medium flex items-center hover:cursor-pointer"
             >
-              <span>Cerrar sesión</span>
+              <span>{{ t('profile.logout' )}}</span>
             </button>
           </div>
         </div>
@@ -98,7 +102,7 @@ const goToCreateTip = () => {
           <button 
             class="px-4 py-2 border-b-2 border-teal-500 text-teal-600 font-medium"
           >
-            Mis consejos
+            {{ t('profile.myTips') }}
           </button>
         </div>
       </div>
@@ -106,12 +110,12 @@ const goToCreateTip = () => {
       <!-- User's tips -->
       <div>
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-semibold text-slate-900">Mis consejos</h2>
+          <h2 class="text-xl font-semibold text-slate-900">{{ t('profile.myTips') }}</h2>
           <button 
             @click="goToCreateTip"
             class="btn btn-primary"
           >
-            <span class="mr-1">+</span> Nuevo consejo
+            <span class="mr-1">+</span> {{ t('profile.createTip') }}
           </button>
         </div>
         

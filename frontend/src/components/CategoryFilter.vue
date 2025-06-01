@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { getCategoryLabel } from '../utils/i18n'
 
 const props = defineProps<{
   categories: string[]
@@ -11,6 +13,7 @@ const emit = defineEmits<{
 }>()
 
 const active = computed(() => props.selectedCategory)
+const { t } = useI18n()
 
 const selectCategory = (category: string | null) => {
   emit('select', category)
@@ -25,7 +28,7 @@ const selectCategory = (category: string | null) => {
         class="px-4 py-2 rounded-full text-sm font-medium transition-colors hover:cursor-pointer"
         :class="active === null ? 'bg-teal-500 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'"
       >
-        Todos
+        {{ t('categories.all') }}
       </button>
       
       <button
@@ -35,7 +38,7 @@ const selectCategory = (category: string | null) => {
         class="px-4 py-2 rounded-full text-sm font-medium transition-colors hover:cursor-pointer"
         :class="active === category ? 'bg-teal-500 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'"
       >
-        {{ category }}
+        {{ getCategoryLabel(category) }}
       </button>
     </div>
   </div>

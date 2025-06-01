@@ -5,6 +5,7 @@ import { useTipsStore } from '../stores/tips'
 import { useUserStore } from '../stores/user'
 import { TipForm } from '../components'
 import type { Tip } from '../types'
+import { useI18n } from 'vue-i18n'
 
 const route = useRoute()
 const router = useRouter()
@@ -16,6 +17,7 @@ const isLoading = computed(() => tipsStore.isLoading)
 const error = ref('')
 const tip = ref<Tip | null>(null)
 const isSubmitting = ref(false) 
+const { t } = useI18n()
 
 const loadTip = async () => {
   error.value = ''
@@ -25,7 +27,7 @@ const loadTip = async () => {
     tip.value = result
     
     if (tip.value && userStore.currentUser) {
-      const isAuthor = tip.value.data.author._id === userStore.currentUser.id
+      const isAuthor = tip.value.data.author?._id === userStore.currentUser.id
 
       if (!isAuthor) {
         error.value = 'No tienes permiso para editar este consejo'
@@ -33,7 +35,6 @@ const loadTip = async () => {
       }
     }
   } catch (err) {
-    console.error('Error al cargar el tip:', err)
     error.value = 'Error al cargar el consejo. Inténtalo de nuevo.'
   }
 }
@@ -81,7 +82,7 @@ onMounted(async () => {
 <template>
   <div class="container mx-auto py-6 px-4">
     <div class="max-w-3xl mx-auto">
-      <h1 class="text-2xl font-bold text-slate-900 mb-6">Editar consejo</h1>
+      <h1 class="text-2xl font-bold text-slate-900 mb-6">{{ t('tip.edit') }}</h1>
       
       <!-- Error message -->
       <div v-if="error" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mb-4">
@@ -104,7 +105,7 @@ onMounted(async () => {
               <div class="w-3 h-3 rounded-full bg-teal-500"></div>
               <div class="w-3 h-3 rounded-full bg-teal-600"></div>
             </div>
-            <p class="text-slate-700 mt-2">Actualizando consejo...</p>
+            <p class="text-slate-700 mt-2">{{ t('common.loading') }}</p>
           </div>
         </div>
       </div>

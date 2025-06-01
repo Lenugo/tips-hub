@@ -2,10 +2,11 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { format } from 'date-fns'
-import { es } from 'date-fns/locale'
+import { es, enUS } from 'date-fns/locale'
+import { useI18n } from 'vue-i18n'
 import { useUserStore } from '../stores/user'
 import type { Tip } from '../types'
-import LikeButton from './LikeButton.vue'
+import { LikeButton } from './'
 
 const props = defineProps<{
   tip: Tip
@@ -18,13 +19,17 @@ const emit = defineEmits<{
 
 const router = useRouter()
 const userStore = useUserStore()
+const { t } = useI18n()
+
+const { locale } = useI18n()
 
 const formattedDate = computed(() => {
   try {
     const dateToFormat = props.tip.publishedDate || props.tip.createdAt
-    return format(new Date(dateToFormat), 'PP', { locale: es })
+    const dateLocale = locale.value === 'es' ? es : enUS
+    return format(new Date(dateToFormat), 'PP', { locale: dateLocale })
   } catch (error) {
-    return 'Date unknown'
+    return t('common.dateUnknown')
   }
 })
 
@@ -95,13 +100,13 @@ const handleLikeClick = (event: MouseEvent) => {
       </p>
       
       <div v-if="!detailed" class="text-teal-600 font-medium text-sm mb-3">
-        Leer más...
+        {{ t('tip.readMore') }}
       </div>
       
       <div class="flex justify-between items-center text-sm text-gray-500">
         <span>{{ formattedDate }}</span>
-        <span v-if="tip.author">Por: {{ tip.author.username }}</span>
-        <span v-else-if="tip.userName">Por: {{ tip.userName }}</span>
+        <span v-if="tip.author">{{ t('tip.by') }} {{ tip.author.username }}</span>
+        <span v-else-if="tip.userName">{{ t('tip.by') }} {{ tip.userName }}</span>
       </div>
     </div>
   </div>

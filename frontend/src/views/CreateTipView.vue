@@ -3,12 +3,15 @@ import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useTipsStore } from '../stores/tips'
 import { useUserStore } from '../stores/user'
+import { useI18n } from 'vue-i18n'
+import { getCategoryLabel } from '../utils/i18n'
 
 const router = useRouter()
 const tipsStore = useTipsStore()
 const userStore = useUserStore()
 const isSubmitting = ref(false)
 const error = ref('')
+const { t } = useI18n()
 
 const tipData = ref({
   title: '',
@@ -50,7 +53,6 @@ const handleSubmit = async () => {
       router.push('/profile')
     }
   } catch (err) {
-    console.error('Error creating tip:', err)
     error.value = 'Error al crear el consejo. Inténtalo de nuevo.'
   } finally {
     isSubmitting.value = false
@@ -65,7 +67,7 @@ const removeCategory = (category: string) => {
 <template>
   <div class="container mx-auto py-8">
     <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-6">
-      <h1 class="text-2xl font-bold text-slate-800 mb-6">Crear nuevo consejo</h1>
+      <h1 class="text-2xl font-bold text-slate-800 mb-6">{{ t('profile.createTip') }}</h1>
       
       <form @submit.prevent="handleSubmit" class="space-y-4">
         <div v-if="error" class="p-3 bg-red-50 text-red-600 rounded-md">
@@ -73,7 +75,7 @@ const removeCategory = (category: string) => {
         </div>
         
         <div>
-          <label for="title" class="block text-sm font-medium text-slate-700 mb-1">Título</label>
+          <label for="title" class="block text-sm font-medium text-slate-700 mb-1">{{ t('form.title') }}</label>
           <input
             id="title"
             v-model="tipData.title"
@@ -85,7 +87,7 @@ const removeCategory = (category: string) => {
         </div>
         
         <div>
-          <label for="content" class="block text-sm font-medium text-slate-700 mb-1">Contenido</label>
+          <label for="content" class="block text-sm font-medium text-slate-700 mb-1">{{ t('form.content') }}</label>
           <textarea
             id="content"
             v-model="tipData.content"
@@ -97,7 +99,7 @@ const removeCategory = (category: string) => {
         </div>
         
       <div>
-        <label class="block text-sm font-medium text-slate-700 mb-2">Categorías</label>
+        <label class="block text-sm font-medium text-slate-700 mb-2">{{ t('form.categories') }}</label>
         <div class="grid grid-cols-2 gap-3">
           <div v-for="category in categories" :key="category" 
               class="flex items-center p-2 rounded-md transition-colors"
@@ -111,15 +113,15 @@ const removeCategory = (category: string) => {
             />
             <label :for="category" class="ml-2 block text-sm font-medium cursor-pointer select-none" 
                   :class="tipData.categories.includes(category) ? 'text-teal-700' : 'text-slate-700'">
-              {{ category }}
+              {{ getCategoryLabel(category) }}
             </label>
           </div>
         </div>
-        <p class="text-xs text-slate-500 mt-2">Selecciona al menos una categoría para tu consejo</p>
+        <p class="text-xs text-slate-500 mt-2">{{ t('form.selectCategories') }}</p>
         <div v-if="tipData.categories.length > 0" class="mt-3 flex flex-wrap gap-2">
           <div v-for="selected in tipData.categories" :key="selected" 
               class="bg-teal-100 text-teal-800 text-xs font-medium px-2.5 py-1 rounded flex items-center">
-            {{ selected }}
+            {{ getCategoryLabel(selected) }}
             <button @click="removeCategory(selected)" type="button" class="ml-1.5 text-teal-700 hover:text-teal-900">
               <span class="sr-only">Remove</span>
               <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -135,15 +137,15 @@ const removeCategory = (category: string) => {
             to="/"
             class="px-4 py-2 border border-slate-300 text-slate-700 rounded-md hover:bg-slate-50"
           >
-            Cancelar
+            {{ t('form.cancel') }}
           </router-link>
           <button
             type="submit"
             class="px-4 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 hover:cursor-pointer"
             :disabled="isSubmitting"
           >
-            <span v-if="isSubmitting">Guardando...</span>
-            <span v-else>Crear consejo</span>
+            <span v-if="isSubmitting">{{ t('common.loading') }}</span>
+            <span v-else>{{ t('form.create')  }}</span>
           </button>
         </div>
       </form>

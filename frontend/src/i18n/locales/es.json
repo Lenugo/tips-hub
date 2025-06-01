@@ -1,0 +1,82 @@
+{
+  "app": {
+    "title": "Tips Hub",
+    "description": "Descubre y comparte consejos sobre diversos temas"
+  },
+  "nav": {
+    "newTip": "Nuevo Consejo",
+    "login": "Iniciar sesión",
+    "register": "Registrarse"
+  },
+  "home": {
+    "title": "Tips Hub",
+    "description": "Descubre y comparte consejos sobre diversos temas",
+    "loadMore": "Scroll para cargar más",
+    "noTipsFound": "No se encontraron consejos",
+    "noTipsDescription": "No hay consejos disponibles para la categoría seleccionada.",
+    "viewAllTips": "Ver todos los consejos"
+  },
+  "categories": {
+    "all": "Todos",
+    "career": "Carrera",
+    "relationships": "Relaciones",
+    "health": "Salud",
+    "finance": "Finanzas",
+    "personal-growth": "Crecimiento Personal",
+    "productivity": "Productividad",
+    "education": "Educación"
+  },
+  "tip": {
+    "readMore": "Leer más...",
+    "by": "Por:",
+    "edit": "Editar consejo",
+    "delete": "Eliminar",
+    "back": "Volver"
+  },
+  "auth": {
+    "login": "Iniciar sesión",
+    "register": "Registrarse",
+    "username": "Nombre de usuario",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar contraseña",
+    "loginButton": "Ingresar",
+    "registerButton": "Registrarse",
+    "switchToRegister": "¿No tienes cuenta? Regístrate",
+    "switchToLogin": "¿Ya tienes cuenta? Inicia sesión"
+  },
+  "form": {
+    "title": "Título",
+    "content": "Contenido",
+    "categories": "Categorías",
+    "selectCategories": "Selecciona al menos una categoría para tu consejo",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "create": "Crear",
+    "update": "Actualizar"
+  },
+  "profile": {
+    "title": "Perfil",
+    "myTips": "Mis Consejos",
+    "memberSince": "Miembro desde",
+    "logout": "Cerrar sesión",
+    "createTip": "Crear Consejo"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "close": "Cerrar",
+    "dateUnknown": "Fecha desconocida"
+  },
+  "deleteTip": {
+    "title": "Eliminar consejo",
+    "confirm": "¿Estás seguro de que deseas eliminar este consejo? Esta acción no se puede deshacer.",
+    "loading": "Eliminando..."
+  },
+  "notFound": {
+    "title": "Página no encontrada",
+    "description": "Lo sentimos, la página que estás buscando no existe.",
+    "goHome": "Volver al inicio"
+  }
+}

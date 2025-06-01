@@ -4,11 +4,14 @@ import { useRoute, useRouter } from 'vue-router'
 import { useTipsStore } from '../stores/tips'
 import { useUserStore } from '../stores/user'
 import { AuthModal, TipCard, DeleteButton } from '../components'
+import { useI18n } from 'vue-i18n'
+import { getCategoryLabel } from '../utils/i18n'
 
 const route = useRoute()
 const router = useRouter()
 const tipsStore = useTipsStore()
 const userStore = useUserStore()
+const { t } = useI18n()
 
 const tipId = computed(() => route.params.id as string)
 const isLoading = computed(() => tipsStore.isLoading)
@@ -63,7 +66,7 @@ watch(tipId, fetchTip)
       class="flex items-center text-slate-600 hover:text-slate-900 mb-4 hover:cursor-pointer"
     >
       <span class="mr-1">←</span>
-      <span>Volver</span>
+      <span>{{ t('tip.back') }}</span>
     </button>
     
     <div v-if="tip && !isLoading">
@@ -76,7 +79,7 @@ watch(tipId, fetchTip)
             :key="cat" 
             class="px-3 py-1.5 rounded-full text-sm bg-teal-100 text-teal-700 font-medium"
           >
-            {{ cat }}
+            {{ getCategoryLabel(cat) }}
           </span>
         </div>
         
@@ -88,7 +91,7 @@ watch(tipId, fetchTip)
             @click="goToEdit"
             class="btn btn-secondary"
           >
-            Editar consejo
+            {{ t('tip.edit') }}
           </button>
         </div>
         

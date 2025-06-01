@@ -1,39 +1,41 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { useTipsStore } from '../stores/tips';
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useTipsStore } from '../stores/tips'
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
-  tipId: string;
-}>();
+  tipId: string
+}>()
 
-const router = useRouter();
-const tipsStore = useTipsStore();
-const isDeleting = ref(false);
-const error = ref('');
+const router = useRouter()
+const tipsStore = useTipsStore()
+const isDeleting = ref(false)
+const error = ref('')
+const { t } = useI18n()
 
 const handleDelete = async () => {
-  if (!confirm('¿Estás seguro de que deseas eliminar este consejo? Esta acción no se puede deshacer.')) {
-    return;
+  if (!confirm(`${t('deleteTip.confirm')}`)) {
+    return
   }
   
-  isDeleting.value = true;
-  error.value = '';
+  isDeleting.value = true
+  error.value = ''
   
   try {
-    const result = await tipsStore.deleteTip(props.tipId);
+    const result = await tipsStore.deleteTip(props.tipId)
     if (result) {
-      router.push('/');
+      router.push('/')
     } else {
-      error.value = 'Error al eliminar el consejo. Inténtalo de nuevo.';
+      error.value = 'Error al eliminar el consejo. Inténtalo de nuevo.'
     }
   } catch (err) {
-    console.error('Error al eliminar el tip:', err);
-    error.value = 'Error al eliminar el consejo. Inténtalo de nuevo.';
+    console.error('Error al eliminar el tip:', err)
+    error.value = 'Error al eliminar el consejo. Inténtalo de nuevo.'
   } finally {
-    isDeleting.value = false;
+    isDeleting.value = false
   }
-};
+}
 </script>
 
 <template>
@@ -48,8 +50,8 @@ const handleDelete = async () => {
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
       </svg>
-      <span v-if="isDeleting">Eliminando...</span>
-      <span v-else>Eliminar consejo</span>
+      <span v-if="isDeleting">{{ t('deleteTip.loading') }}</span>
+      <span v-else>{{ t('deleteTip.title') }}</span>
     </button>
     
     <div v-if="error" class="mt-2 text-sm text-red-600">
