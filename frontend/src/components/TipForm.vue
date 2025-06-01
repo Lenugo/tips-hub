@@ -69,25 +69,25 @@ const validateForm = (): boolean => {
   
   // Title validation
   if (!tipData.value.title.trim()) {
-    errors.value.title = 'El título es obligatorio'
+    errors.value.title = t('validations.titleRequired')
     isValid = false
-  } else if (tipData.value.title.length < 5) {
-    errors.value.title = 'El título debe tener al menos 5 caracteres'
+  } else if (tipData.value.title.length <= 3) {
+    errors.value.title = t('validations.titleTooShort')
     isValid = false
   }
   
   // Content validation
   if (!tipData.value.content.trim()) {
-    errors.value.content = 'El contenido es obligatorio'
+    errors.value.content = t('validations.contentRequired')
     isValid = false
   } else if (tipData.value.content.length < 20) {
-    errors.value.content = 'El contenido debe tener al menos 20 caracteres'
+    errors.value.content = t('validations.contentTooShort')
     isValid = false
   }
   
   // Category validation
   if (tipData.value.categories.length === 0) {
-    errors.value.category = 'Debes seleccionar al menos una categoría'
+    errors.value.category = t('validations.categoryRequired')
     isValid = false
   }
   
@@ -132,7 +132,7 @@ const handleCancel = () => {
         type="text"
         class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
         :class="{ 'border-red-500': errors.title }"
-        placeholder="Un título claro y conciso"
+        placeholder="My dear tip"
       />
     </div>
     
@@ -146,7 +146,7 @@ const handleCancel = () => {
         rows="6"
         class="w-full px-3 py-2 border resize-none border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
         :class="{ 'border-red-500': errors.content }"
-        placeholder="Comparte tu consejo detalladamente..."
+        placeholder="Share your advice..."
       ></textarea>
     </div>
     

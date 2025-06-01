@@ -26,11 +26,11 @@ const form = ref({
 })
 
 const loading = computed(() => userStore.isLoading)
-const error = computed(() => userStore.error)
+const error = ref('')
 
 // Toggle between login and register modes
 const toggleMode = () => {
-  userStore.error = ''
+  error.value = ''
   
   form.value = {
     username: '',
@@ -49,43 +49,43 @@ const toggleMode = () => {
 const handleSubmit = async () => {
   if (currentMode.value === 'login') {
     if (!form.value.email || !form.value.password) {
-      userStore.error = 'Por favor completa todos los campos'
+      error.value = t('validations.completeAllFields')
       return
     }
 
     if (/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(form.value.email) === false) {
-      userStore.error = 'El email no es válido'
+      error.value = t('validations.invalidEmail')
       return
     }
 
     if (form.value.password.length < 6) {
-      userStore.error = 'La contraseña debe tener al menos 6 caracteres'
+      error.value = t('validations.passwordTooShort')
       return
     }
 
   } else {
     if (!form.value.username || !form.value.email || !form.value.password || !form.value.confirmPassword) {
-      userStore.error = 'Por favor completa todos los campos'
+      error.value = t('validations.completeAllFields')
       return
     }
 
     if (form.value.username.length < 3) {
-      userStore.error = 'El nombre de usuario debe tener al menos 3 caracteres'
+      error.value = t('validations.usernameTooShort', { minLength: 3 })
       return
     }
 
     if (/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(form.value.email) === false) {
-      userStore.error = 'El email no es válido'
+      error.value = t('validations.invalidEmail')
       return
     }
 
     if (form.value.password.length < 6) {
-      userStore.error = 'La contraseña debe tener al menos 6 caracteres'
+      error.value = t('validations.passwordTooShort')
       return
     }
 
     if (form.value.password !== form.value.confirmPassword) {
-      userStore.error = 'Las contraseñas no coinciden'
+      error.value = t('validations.passwordsDoNotMatch')
       return
     }
   }
@@ -111,17 +111,16 @@ const handleSubmit = async () => {
       })
       
       if (success) {
-        // await userStore.checkAuth()
         emit('close')
       }
     }
-  } catch (err: any) {
-    // Error handling is now managed by the store
+  } catch {
+    error.value = t('auth.genericError')
   }
 }
 
 const handleClose = () => {
-  userStore.error = ''
+  error.value = ''
   emit('close')
 }
 
@@ -161,7 +160,7 @@ const buttonText = computed(() => {
             v-model="form.username"
             type="text"
             class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-            placeholder="usuario123"
+            placeholder="John Doe"
           />
         </div>
         
@@ -174,7 +173,7 @@ const buttonText = computed(() => {
             v-model="form.email"
             type="email"
             class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-            placeholder="usuario@ejemplo.com"
+            placeholder="user@example.com"
           />
         </div>
         
@@ -216,7 +215,7 @@ const buttonText = computed(() => {
               {{ currentMode === 'login' ? t('auth.register') : t('auth.login') }}
             </button>
         </div>
-        
+
         <div class="flex justify-end space-x-3 pt-4">
           <button
             type="button"

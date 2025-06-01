@@ -86,5 +86,18 @@
     "home": "Home",
     "create": "Create",
     "profile": "Profile"
+  },
+  "validations": {
+    "completeAllFields": "Please complete all fields",
+    "invalidEmail": "The email is not valid",
+    "passwordTooShort": "The password must be at least 6 characters",
+    "usernameTooShort": "The username must be at least 3 characters",
+    "passwordsDoNotMatch": "Passwords do not match",
+    "genericError": "An error occurred. Please try again.",
+    "titleRequired": "The title is required",
+    "titleTooShort": "The title must be at least 3 characters",
+    "contentRequired": "The content is required",
+    "contentTooShort": "The content must be at least 20 characters",
+    "categoryRequired": "You must select at least one category"
   }
 }

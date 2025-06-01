@@ -86,5 +86,18 @@
     "home": "Inicio",
     "create": "Crear",
     "profile": "Perfil"
+  },
+  "validations": {
+    "completeAllFields": "Por favor completa todos los campos",
+    "invalidEmail": "El email no es válido",
+    "passwordTooShort": "La contraseña debe tener al menos 6 caracteres",
+    "usernameTooShort": "El nombre de usuario debe tener al menos 3 caracteres",
+    "passwordsDoNotMatch": "Las contraseñas no coinciden",
+    "genericError": "Un error ha ocurrido. Por favor, inténtalo de nuevo.",
+    "titleRequired": "El título es obligatorio",
+    "titleTooShort": "El título debe tener al menos 3 caracteres",
+    "contentRequired": "El contenido es obligatorio",
+    "contentTooShort": "El contenido debe tener al menos 20 caracteres",
+    "categoryRequired": "Debes seleccionar al menos una categoría"
   }
 }

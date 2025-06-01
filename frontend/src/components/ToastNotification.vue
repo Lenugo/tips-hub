@@ -60,7 +60,7 @@ const icon = computed(() => {
 
 <template>
   <transition name="toast">
-    <div v-if="show" class="fixed top-4 right-4 z-[99] max-w-md w-full shadow-lg rounded-lg overflow-hidden">
+    <div v-if="show" class="fixed top-4 right-1 md:right-4 z-[99] max-w-sm md:max-w-md w-full shadow-lg rounded-lg overflow-hidden">
       <div :class="['p-4 border flex items-center justify-between', bgColor]">
         <div :class="['flex-shrink-0 mr-3 text-md', iconColor]">
           {{ icon }}

@@ -50,14 +50,14 @@ const goToProfile = () => {
           <span>{{ t('app.title') }}</span>
         </router-link>
         
-        <nav class="hidden md:flex items-center space-x-6">
+        <nav class="flex items-center space-x-6">
           <LanguageSwitcher />
           
-          <button v-if="isLoggedIn" @click="goToCreateTip" class="px-4 py-2 rounded-full bg-teal-50 text-teal-600 hover:bg-teal-100 transition-colors border border-teal-200 flex items-center hover:cursor-pointer">
+          <button v-if="isLoggedIn" @click="goToCreateTip" class="hidden md:flex px-4 py-2 rounded-full bg-teal-50 text-teal-600 hover:bg-teal-100 transition-colors border border-teal-200 items-center hover:cursor-pointer">
             <span class="mr-1 text-lg">+</span> {{ t('nav.newTip') }}
           </button>
           
-          <div v-if="isLoggedIn" class="relative">
+          <div v-if="isLoggedIn" class="relative hidden md:block">
             <button 
               @click="goToProfile" 
               class="flex items-center text-slate-700 hover:text-teal-600"

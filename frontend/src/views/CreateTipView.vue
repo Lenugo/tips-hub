@@ -33,23 +33,23 @@ onMounted(async () => {
 })
 
 const handleSubmit = async () => {
-  if (!tipData.value.title || !tipData.value.content) {
-    error.value = 'El título y el contenido son obligatorios'
+  if (!tipData.value.title) {
+    error.value = t('validations.titleRequired')
     return
   }
 
   if (tipData.value.title.length < 3) {
-    error.value = 'El título debe tener al menos 3 caracteres'
+    error.value = t('validations.titleTooShort')
     return
   }
 
   if (tipData.value.content.length < 20) {
-    error.value = 'El contenido debe tener al menos 20 caracteres'
+    error.value = t('validations.contentTooShort')
     return
   }
 
   if (tipData.value.categories.length === 0) {
-    error.value = 'Debes seleccionar al menos una categoría'
+    error.value = t('validations.categoryRequired')
     return
   }
   
@@ -94,7 +94,7 @@ const removeCategory = (category: string) => {
             v-model="tipData.title"
             type="text"
             class="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
-            placeholder="Escribe un título descriptivo"
+            placeholder="Write a title for your tip"
             required
           />
         </div>
@@ -106,7 +106,7 @@ const removeCategory = (category: string) => {
             v-model="tipData.content"
             rows="6"
             class="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 resize-none"
-            placeholder="Describe tu consejo en detalle"
+            placeholder="Describe your tip"
             required
           ></textarea>
         </div>

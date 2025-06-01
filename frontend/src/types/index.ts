@@ -60,24 +60,32 @@ export interface TipDeleteResponse {
   data: { message: string }
 }
 
-export enum ConsejosCategoria {
-  SaludYBienestar = "Salud y bienestar",
-  DineroYFinanzas = "Dinero y finanzas",
-  RelacionesPersonales = "Relaciones personales",
-  CarreraYDesarrolloPersonal = "Carrera profesional y desarrollo personal",
-  CrecimientoEmocionalYEspiritual = "Crecimiento emocional y espiritual",
-  TiempoLibreYProductividad = "Tiempo libre y productividad",
-  EducacionYAprendizaje = "Educación y aprendizaje",
-  EstiloDeVidaYModa = "Estilo de vida y moda"
+
+/** User */
+export type LoginBody = {
+  email: string,
+  password: string
 }
 
-export enum AdviceCategory {
-  HealthAndWellness = "Health and Wellness",
-  MoneyAndFinance = "Money and Finance",
-  PersonalRelationships = "Personal Relationships",
-  CareerAndPersonalDevelopment = "Career and Personal Development",
-  EmotionalAndSpiritualGrowth = "Emotional and Spiritual Growth",
-  FreeTimeAndProductivity = "Free Time and Productivity",
-  EducationAndLearning = "Education and Learning",
-  LifestyleAndFashion = "Lifestyle and Fashion"
+export type RegisterBody = {
+  email: string,
+  password: string,
+  username: string
+}
+
+export interface UserSelected {
+  id: string
+  userName: string
+  email: string
+  createdAt: string
+  updatedAt: string
+  likedTips?: string[] 
+}
+
+
+export enum NotificationType {
+  Success = 'success',
+  Error = 'error',
+  Info = 'info',
+  Warning = 'warning'
 }

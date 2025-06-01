@@ -1,19 +1,13 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref, watch, nextTick } from 'vue'
 import { TheNavbar, MobileNavbar, ToastNotification } from './components'
 import { useTipsStore } from './stores/tips'
 import { useUserStore } from './stores/user'
+import { NotificationType } from './types'
 
 const tipsStore = useTipsStore()
 const userStore = useUserStore()
 const isLoading = ref(true)
-
-enum NotificationType {
-  Success = 'success',
-  Error = 'error',
-  Info = 'info',
-  Warning = 'warning'
-}
 
 const notification = ref({
   show: false,
@@ -41,16 +35,16 @@ const handleClose = () => {
   }
 }
 
-watch(() => tipsStore.error, (newTipsError) => {
-  if (newTipsError) {
-    showNotification(newTipsError, NotificationType.Error)
-  }
+
+watch(() => (userStore.notificationValues), (newNotification) => {
+  if (!newNotification.type) return
+  showNotification(userStore.notificationValues.message!, userStore.notificationValues.type as NotificationType)
+
 })
 
-watch(() => userStore.error, (newUserError) => {
-  if (newUserError) {
-    showNotification(newUserError, NotificationType.Error)
-  }
+watch(() => (tipsStore.notificationValues), (newNotification) => {
+  if (!newNotification.type) return
+  showNotification(tipsStore.notificationValues.message!, tipsStore.notificationValues.type as NotificationType)
 })
 
 onMounted(async () => {

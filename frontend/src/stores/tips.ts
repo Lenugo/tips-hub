@@ -2,14 +2,14 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import api from '../utils/api'
 import { useUserStore } from './user'
-import type { LikedResponse, PaginatedResponse, Tip, TipResponse, TipDeleteResponse  } from '@/types'
+import { type LikedResponse, type PaginatedResponse, type Tip, type TipResponse, type TipDeleteResponse, NotificationType  } from '@/types'
 
 export const useTipsStore = defineStore('tips', () => {
   const tips = ref<Tip[]>([])
   const userTips = ref<Tip[]>([])
   const currentTip = ref<Tip | null>(null)
   const isLoading = ref(false)
-  const error = ref<string | null>(null)
+  const notificationValues = ref<{ [key: string]: string }>({ message: '', type: '' })
   const categories = ref<string[]>(['career', 'relationships', 'health', 'finance', 'personal-growth', 'productivity', 'education'])
   const userStore = useUserStore()
   
@@ -19,7 +19,11 @@ export const useTipsStore = defineStore('tips', () => {
 
   const handleErrorTipResponse = (status: number, success: boolean, action: string): boolean => {
     if (status !== 200 || (status === 200 && !success)) {
-      error.value = `Something went wrong ${action} your tip`
+      notificationValues.value = {
+        message: `Something went ${action} wrong`,
+        type: NotificationType.Error
+      }
+
       return true
     }
     return false
@@ -27,7 +31,7 @@ export const useTipsStore = defineStore('tips', () => {
 
   const getAllTips = async (category?: string, page: number = 1, limit: number = 10) => {
     isLoading.value = true
-    error.value = null
+    notificationValues.value = { message: '', type: '' }
     
     try {
       // Build URL with parameters
@@ -77,7 +81,10 @@ export const useTipsStore = defineStore('tips', () => {
         pagination: response.pagination
       }
     } catch {
-      error.value = 'Error getting the tips'
+      notificationValues.value = {
+        message: 'Error getting the tips',
+        type: NotificationType.Error
+      }
       return { tips: [], pagination: null }
     } finally {
       isLoading.value = false
@@ -86,7 +93,7 @@ export const useTipsStore = defineStore('tips', () => {
 
   const getUserTips = async () => {
     isLoading.value = true
-    error.value = null
+    notificationValues.value = { message: '', type: '' }
     
     try {
       const { data, status } = await api.get('/advices/user')
@@ -105,7 +112,10 @@ export const useTipsStore = defineStore('tips', () => {
       userTips.value = response.data as Tip[]
       return userTips.value
     } catch {
-      error.value = 'Error loading your tips'
+      notificationValues.value = {
+        message: 'Error loading your tips',
+        type: NotificationType.Error
+      }
       return null
     } finally {
       isLoading.value = false
@@ -114,7 +124,7 @@ export const useTipsStore = defineStore('tips', () => {
 
   const getTipById = async (id: string) => {
     isLoading.value = true
-    error.value = null
+    notificationValues.value = { message: '', type: '' }
     
     try {
       const { data, status } = await api.get(`/advices/${id}`)
@@ -128,7 +138,10 @@ export const useTipsStore = defineStore('tips', () => {
       currentTip.value = response.data as Tip
       return response.data as Tip
     } catch {
-      error.value = 'Error getting the tip'
+      notificationValues.value = {
+        message: 'Error getting the tip',
+        type: NotificationType.Error
+      }
       return null
     } finally {
       isLoading.value = false
@@ -137,20 +150,21 @@ export const useTipsStore = defineStore('tips', () => {
 
   const createTip = async (tipData: Pick<Tip, 'title' | 'content' | 'categories'>) => {
     isLoading.value = true
-    error.value = null
+    notificationValues.value = { message: '', type: '' }
 
     try {
-      const { data, status } = await api.post('/advices', tipData)
-      const response: TipResponse = data
+      await api.post('/advices', tipData)
 
-      if (handleErrorTipResponse(status, response.success, 'creating')) {
-        return
+      notificationValues.value = {
+        message: 'Tip created successfully',
+        type: NotificationType.Success
       }
-
-      // await getUserTips()
-      // return response.data
+      return true
     } catch { 
-      error.value = 'Error creating tip'
+      notificationValues.value = {
+        message: 'Error creating your tip',
+        type: NotificationType.Error
+      }
       return null
     } finally {
       isLoading.value = false
@@ -159,7 +173,7 @@ export const useTipsStore = defineStore('tips', () => {
 
   const updateTip = async (id: string, tipData: Partial<Tip>) => {
     isLoading.value = true
-    error.value = null
+    notificationValues.value = { message: '', type: '' }
     
     try {
       const { data, status } = await api.patch(`/advices/${id}`, tipData)
@@ -169,10 +183,16 @@ export const useTipsStore = defineStore('tips', () => {
         return
       }
 
-      await getUserTips()
-      return response.data
-    } catch (err: any) {
-      error.value = err.response?.data?.message || 'Error updating the tip'
+      notificationValues.value = {
+        message: 'Tip updated successfully',
+        type: NotificationType.Success
+      }
+      return response.data as Tip
+    } catch {
+      notificationValues.value = {
+        message: 'Error updating the tip',
+        type: NotificationType.Error
+      }
       return null
     } finally {
       isLoading.value = false
@@ -181,7 +201,7 @@ export const useTipsStore = defineStore('tips', () => {
 
   const deleteTip = async (id: string) => {
     isLoading.value = true
-    error.value = null
+    notificationValues.value = { message: '', type: '' }
     
     try {
       const { data, status } = await api.delete(`/advices/${id}`)
@@ -191,10 +211,16 @@ export const useTipsStore = defineStore('tips', () => {
         return
       }
 
-      await getUserTips()
-      return 'advice deleted successfully'
-    } catch (err: any) {
-      error.value = 'Error removing the tip. Try again or later.'
+      notificationValues.value = {
+        message: 'Tip removed successfully',
+        type: NotificationType.Success
+      }
+      return response.data.message
+    } catch {
+      notificationValues.value = {
+        message: 'Error removing the tip',
+        type: NotificationType.Error
+      }
       return null
     } finally {
       isLoading.value = false
@@ -202,6 +228,8 @@ export const useTipsStore = defineStore('tips', () => {
   }
 
   const likeTip = async (id: string) => {
+    notificationValues.value = { message: '', type: '' }
+
     try {
       const { data, status } = await api.post(`/advices/likes/${id}`)
       let response: LikedResponse = data
@@ -274,9 +302,24 @@ export const useTipsStore = defineStore('tips', () => {
         ]
       }
       
+      if (action === 'liked') {
+        notificationValues.value = {
+          message: 'Tip liked',
+          type: 'success'   
+        }
+      } else {
+        notificationValues.value = {
+          message: 'Tip unliked',
+          type:'info'
+        }
+      }
+
       return response.data
     } catch {
-      error.value = 'Error updating like'
+      notificationValues.value = {
+        message: 'Error liking the tip',
+        type: NotificationType.Error
+      }
       return null
     }
   }
@@ -286,8 +329,8 @@ export const useTipsStore = defineStore('tips', () => {
     userTips,
     currentTip,
     isLoading,
-    error,
     categories,
+    notificationValues,
     getAllTips,
     getUserTips,
     getTipById,
