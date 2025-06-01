@@ -42,8 +42,8 @@
     "confirmPassword": "Confirmar contraseña",
     "loginButton": "Ingresar",
     "registerButton": "Registrarse",
-    "switchToRegister": "¿No tienes cuenta? Regístrate",
-    "switchToLogin": "¿Ya tienes cuenta? Inicia sesión"
+    "switchToRegister": "¿No tienes cuenta?",
+    "switchToLogin": "¿Ya tienes cuenta?"
   },
   "form": {
     "title": "Título",
@@ -78,5 +78,10 @@
     "title": "Página no encontrada",
     "description": "Lo sentimos, la página que estás buscando no existe.",
     "goHome": "Volver al inicio"
+  },
+  "mobileNav": {
+    "home": "Inicio",
+    "create": "Crear",
+    "profile": "Perfil"
   }
 }

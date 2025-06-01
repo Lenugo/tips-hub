@@ -3,7 +3,8 @@ import { useI18n } from 'vue-i18n'
 
 const { locale, availableLocales } = useI18n()
 
-const switchLanguage = (lang: string) => {
+const switchLanguage = (event: Event) => {
+  const lang = (event.target as HTMLSelectElement).value
   locale.value = lang
   localStorage.setItem('preferred-language', lang)
 }
@@ -15,18 +16,13 @@ if (savedLanguage && availableLocales.includes(savedLanguage)) {
 </script>
 
 <template>
-  <div class="flex items-center space-x-2">
-    <button
-      v-for="lang in availableLocales"
-      :key="lang"
-      @click="switchLanguage(lang)"
-      class="px-2 py-1 text-sm rounded transition-colors hover:cursor-pointer"
-      :class="{
-        'bg-teal-100 text-teal-700 font-medium': locale === lang,
-        'text-slate-600 hover:text-teal-600': locale !== lang
-      }"
-    >
+  <select
+    class="p-1 rounded-lg border border-slate-300 bg-white text-teal-700 font-medium focus:outline-none focus:ring-2 focus:ring-teal-200"
+    :value="locale"
+    @change="switchLanguage"
+  >
+    <option v-for="lang in availableLocales" :key="lang" :value="lang">
       {{ lang.toUpperCase() }}
-    </button>
-  </div>
+    </option>
+  </select>
 </template>

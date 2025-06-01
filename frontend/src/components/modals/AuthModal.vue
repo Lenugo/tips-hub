@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useUserStore } from '../../stores/user'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps<{
   mode: 'login' | 'register'
@@ -13,8 +14,8 @@ const emit = defineEmits<{
   (e: 'modeChange', newMode: 'login' | 'register'): void
 }>()
 
-// Local state to track current mode
 const currentMode = ref(props.mode)
+const { t } = useI18n()
 
 const userStore = useUserStore()
 const form = ref({
@@ -29,10 +30,8 @@ const error = computed(() => userStore.error)
 
 // Toggle between login and register modes
 const toggleMode = () => {
-  // Clear any previous errors
   userStore.error = ''
   
-  // Reset form data
   form.value = {
     username: '',
     email: '',
@@ -40,7 +39,6 @@ const toggleMode = () => {
     confirmPassword: ''
   }
   
-  // Toggle the mode
   const newMode = currentMode.value === 'login' ? 'register' : 'login'
   currentMode.value = newMode
   
@@ -128,11 +126,11 @@ const handleClose = () => {
 }
 
 const title = computed(() => {
-  return currentMode.value === 'login' ? 'Iniciar sesión' : 'Registrarse'
+  return currentMode.value === 'login' ? `${t('auth.login')}` : `${t('auth.register')}`
 })
 
 const buttonText = computed(() => {
-  return currentMode.value === 'login' ? 'Ingresar' : 'Registrarse'
+  return currentMode.value === 'login' ? `${t('auth.loginButton')}` : `${t('auth.registerButton')}`
 })
 </script>
 
@@ -156,7 +154,7 @@ const buttonText = computed(() => {
         
         <div v-if="currentMode === 'register'">
           <label for="username" class="block text-sm font-medium text-slate-700 mb-1">
-            Nombre de usuario
+            {{ t('auth.username') }}
           </label>
           <input
             id="username"
@@ -169,7 +167,7 @@ const buttonText = computed(() => {
         
         <div>
           <label for="email" class="block text-sm font-medium text-slate-700 mb-1">
-            Email
+            {{ t('auth.email') }}
           </label>
           <input
             id="email"
@@ -182,7 +180,7 @@ const buttonText = computed(() => {
         
         <div>
           <label for="password" class="block text-sm font-medium text-slate-700 mb-1">
-            Contraseña
+            {{ t('auth.password') }}
           </label>
           <input
             id="password"
@@ -195,7 +193,7 @@ const buttonText = computed(() => {
         
         <div v-if="currentMode === 'register'">
           <label for="confirmPassword" class="block text-sm font-medium text-slate-700 mb-1">
-            Confirmar contraseña
+            {{ t('auth.confirmPassword') }}
           </label>
           <input
             id="confirmPassword"
@@ -206,16 +204,18 @@ const buttonText = computed(() => {
           />
         </div>
         
-        <p class="text-sm text-slate-500">
-          {{ currentMode === 'login' ? '¿No tienes una cuenta?' : '¿Ya tienes una cuenta?' }}
+        <div class="text-sm flex">
+          <p class="text-slate-500">
+            {{ currentMode === 'login' ? t('auth.switchToRegister') : t('auth.switchToLogin') }}        
+          </p>
           <button 
-            type="button"
-            class="text-teal-500 hover:text-teal-600 font-medium ml-1 hover:cursor-pointer"
-            @click="toggleMode"
-          >
-            {{ currentMode === 'login' ? 'Regístrate' : 'Inicia sesión' }}
-          </button>
-        </p>
+              type="button"
+              class="text-teal-500 hover:text-teal-600 font-medium ml-1 hover:cursor-pointer"
+              @click="toggleMode"
+            >
+              {{ currentMode === 'login' ? t('auth.register') : t('auth.login') }}
+            </button>
+        </div>
         
         <div class="flex justify-end space-x-3 pt-4">
           <button
@@ -224,7 +224,7 @@ const buttonText = computed(() => {
             class="px-4 py-2 text-slate-700 bg-slate-100 rounded-md hover:bg-slate-200 focus:outline-none hover:cursor-pointer"
             :disabled="loading"
           >
-            Cancelar
+            {{ t('form.cancel') }}
           </button>
           <button
             type="submit"
