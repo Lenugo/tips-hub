@@ -60,7 +60,10 @@
     "myTips": "Mis Consejos",
     "memberSince": "Miembro desde",
     "logout": "Cerrar sesión",
-    "createTip": "Crear Consejo"
+    "createTip": "Crear Consejo",
+    "noTips": "No has creado consejos aún",
+    "noTipsDescription": "Crea tu primer consejo compartiendo tu experiencia con otros.",
+    "createTipButton": "Crear mi primer consejo"
   },
   "common": {
     "loading": "Cargando...",

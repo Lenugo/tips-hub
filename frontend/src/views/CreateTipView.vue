@@ -16,7 +16,7 @@ const { t } = useI18n()
 const tipData = ref({
   title: '',
   content: '',
-  categories: [],
+  categories: [] as string[],
 })
 
 const categories = computed(() => tipsStore.categories)
@@ -37,6 +37,21 @@ const handleSubmit = async () => {
     error.value = 'El título y el contenido son obligatorios'
     return
   }
+
+  if (tipData.value.title.length < 3) {
+    error.value = 'El título debe tener al menos 3 caracteres'
+    return
+  }
+
+  if (tipData.value.content.length < 20) {
+    error.value = 'El contenido debe tener al menos 20 caracteres'
+    return
+  }
+
+  if (tipData.value.categories.length === 0) {
+    error.value = 'Debes seleccionar al menos una categoría'
+    return
+  }
   
   isSubmitting.value = true
   error.value = ''
@@ -48,11 +63,9 @@ const handleSubmit = async () => {
       categories: tipData.value.categories,
     }
     
-    const result = await tipsStore.createTip(newTip)
-    if (result) {
-      router.push('/profile')
-    }
-  } catch (err) {
+    await tipsStore.createTip(newTip)   
+    router.push('/')
+  } catch {
     error.value = 'Error al crear el consejo. Inténtalo de nuevo.'
   } finally {
     isSubmitting.value = false
@@ -103,7 +116,7 @@ const removeCategory = (category: string) => {
         <div class="grid grid-cols-2 gap-3">
           <div v-for="category in categories" :key="category" 
               class="flex items-center p-2 rounded-md transition-colors"
-              :class="tipData.categories.includes(category) ? 'bg-teal-50 border border-teal-200' : 'hover:bg-slate-50 border border-transparent'">
+              :class="tipData.categories?.includes(category) ? 'bg-teal-50 border border-teal-200' : 'hover:bg-slate-50 border border-transparent'">
             <input
               type="checkbox"
               :id="category"
@@ -112,7 +125,7 @@ const removeCategory = (category: string) => {
               class="h-5 w-5 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
             />
             <label :for="category" class="ml-2 block text-sm font-medium cursor-pointer select-none" 
-                  :class="tipData.categories.includes(category) ? 'text-teal-700' : 'text-slate-700'">
+                  :class="tipData.categories?.includes(category) ? 'text-teal-700' : 'text-slate-700'">
               {{ getCategoryLabel(category) }}
             </label>
           </div>

@@ -5,15 +5,16 @@ import { useTipsStore } from '../stores/tips'
 import { useRouter } from 'vue-router'
 import { TipCard } from '../components/'
 import { useI18n } from 'vue-i18n'
+import type { Tip, User } from '../types'
 
 const userStore = useUserStore()
 const tipsStore = useTipsStore()
 const router = useRouter()
 const isLoading = ref(true)
-const userData = ref(null)
+const userData = ref<User | null>(null)
 const { t, locale } = useI18n()
 
-const userDataTips = computed(() => tipsStore.userTips)
+const userDataTips  = computed<Tip[]>(() => tipsStore.userTips)
 
 // Format the date for display
 const formattedDate = computed(() => {
@@ -39,7 +40,7 @@ onMounted(async () => {
   // Get user data from API
   if (userStore.isLoggedIn) {
     try {
-      const response = await userStore.getUserInfo()
+      const response: User = await userStore.getUserInfo()
       userData.value = response
       
       await tipsStore.getUserTips()
@@ -120,22 +121,22 @@ const goToCreateTip = () => {
         </div>
         
         <div v-if="userDataTips && userDataTips.length > 0" class="space-y-4">
-          <div v-for="tip in userDataTips" :key="tip?._id || tip?.id" class="relative">
+          <div v-for="tip in userDataTips" :key="tip.author?._id || tip?.id" class="relative">
             <TipCard :tip="tip" @like="handleLike" />
           </div>
         </div>
         
         <div v-else-if="!isLoading" class="bg-slate-50 rounded-lg p-8 text-center">
           <div class="text-4xl mb-2">📝</div>
-          <h3 class="text-lg font-medium text-slate-800 mb-2">No has creado consejos</h3>
+          <h3 class="text-lg font-medium text-slate-800 mb-2">{{ t('profile.noTips') }}</h3>
           <p class="text-slate-600 mb-4">
-            Comparte tu conocimiento y experiencia con la comunidad.
+            {{ t('profile.noTipsDescription') }}
           </p>
           <button 
             @click="goToCreateTip"
             class="btn btn-primary"
           >
-            Crear mi primer consejo
+            {{ t('profile.createTipButton')  }}
           </button>
         </div>
         

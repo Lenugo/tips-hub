@@ -60,7 +60,10 @@
     "myTips": "My Tips",
     "memberSince": "Member since",
     "logout": "Logout",
-    "createTip": "Create Tip"
+    "createTip": "Create Tip",
+    "noTips": "You have not created any tips yet.",
+    "noTipsDescription": "Create your first tip by sharing your experience with others.",
+    "createTipButton": "Create my first tip"
   },
   "common": {
     "loading": "Loading...",

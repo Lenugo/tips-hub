@@ -3,20 +3,21 @@ export interface Tip {
   title: string;
   content: string;
   publishedDate: string;
-  category?: string[];
-  categories?: string[];
+  categories: string[];
   likes: number;
   likedBy: string[];
   createdAt: string;
-  author?: {
-    _id: string;
-    username: string;
-    email: string;
-    password: string;
-    createdAt: string;
-    updatedAt: string;
-    __v: number;
-  };
+  author?: Author;
+}
+
+export interface Author {
+  _id: string;
+  username: string;
+  email: string;
+  password?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  __v?: number;
 }
 
 export interface PaginatedResponse<T> {
@@ -40,6 +41,8 @@ export interface User {
   id: string;
   userName: string;
   email: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface ApiResponse<T> {

@@ -126,7 +126,7 @@ export const useTipsStore = defineStore('tips', () => {
       }
       
       currentTip.value = response.data as Tip
-      return response
+      return response.data as Tip
     } catch {
       error.value = 'Error getting the tip'
       return null
@@ -135,10 +135,10 @@ export const useTipsStore = defineStore('tips', () => {
     }
   }
 
-  const createTip = async (tipData: Omit<Tip, 'id' | 'userId' | 'createdAt' | 'updatedAt'>) => {
+  const createTip = async (tipData: Pick<Tip, 'title' | 'content' | 'categories'>) => {
     isLoading.value = true
     error.value = null
-    
+
     try {
       const { data, status } = await api.post('/advices', tipData)
       const response: TipResponse = data
@@ -147,9 +147,9 @@ export const useTipsStore = defineStore('tips', () => {
         return
       }
 
-      await getUserTips()
-      return response.data
-    } catch {
+      // await getUserTips()
+      // return response.data
+    } catch { 
       error.value = 'Error creating tip'
       return null
     } finally {

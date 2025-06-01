@@ -24,10 +24,10 @@ const loadTip = async () => {
   
   try {
     const result = await tipsStore.getTipById(tipId.value)
-    tip.value = result
-    
+    tip.value = result!
+
     if (tip.value && userStore.currentUser) {
-      const isAuthor = tip.value.data.author?._id === userStore.currentUser.id
+      const isAuthor = tip.value.author?._id === userStore.currentUser.id
 
       if (!isAuthor) {
         error.value = 'No tienes permiso para editar este consejo'
@@ -51,14 +51,14 @@ const handleSubmit = async (formData: { title: string; content: string; categori
       content: formData.content,
       categories: formData.categories
     })
-    
-    if (result) {
-      router.push(`/tip/${tipId.value}`)
-    } else {
+
+    if (!result) {
       error.value = 'Error al actualizar el consejo. Inténtalo de nuevo.'
+      return
     }
-  } catch (err) {
-    console.error('Error al actualizar el tip:', err)
+
+    router.push(`/tip/${tipId.value}`)
+  } catch {
     error.value = 'Error al actualizar el consejo. Inténtalo de nuevo.'
   } finally {
     isSubmitting.value = false
@@ -91,7 +91,7 @@ onMounted(async () => {
       
       <div v-if="!isLoading && tip" class="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
         <TipForm 
-          :initialData="tip.data"
+          :initialData="tip"
           :categories="tipsStore.categories"
           @submit="handleSubmit"
           @cancel="handleCancel"

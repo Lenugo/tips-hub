@@ -19,9 +19,8 @@ const emit = defineEmits<{
 
 const router = useRouter()
 const userStore = useUserStore()
-const { t } = useI18n()
-
-const { locale } = useI18n()
+const { t, locale } = useI18n()
+const MAX_LENGHT = 150
 
 const formattedDate = computed(() => {
   try {
@@ -48,10 +47,15 @@ const truncatedContent = computed(() => {
   
   if (props.detailed) return content
   
-  const maxLength = 150
+  const maxLength = MAX_LENGHT
   if (content.length <= maxLength) return content
   
   return content.substring(0, maxLength) + '...'
+})
+
+const showReadMore = computed(() => {
+  const content = props.tip.content || ''
+  return !props.detailed && content.length > MAX_LENGHT
 })
 
 const handleCardClick = () => {
@@ -85,28 +89,17 @@ const handleLikeClick = (event: MouseEvent) => {
         />
       </div>
       
-      <div class="flex space-x-2 mb-3" v-if="tip.category">
-        <span 
-          v-for="cat in Array.isArray(tip.category) ? tip.category : [tip.category]" 
-          :key="cat" 
-          class="px-2 py-1 rounded-full text-xs bg-teal-50 text-teal-700"
-        >
-          {{ cat }}
-        </span>
-      </div>
-      
       <p class="text-gray-700 mb-3" :class="{ 'whitespace-pre-line': detailed }">
         {{ truncatedContent }}
       </p>
       
-      <div v-if="!detailed" class="text-teal-600 font-medium text-sm mb-3">
+      <div v-if="showReadMore" class="text-teal-600 font-medium text-sm mb-3">
         {{ t('tip.readMore') }}
       </div>
       
       <div class="flex justify-between items-center text-sm text-gray-500">
         <span>{{ formattedDate }}</span>
         <span v-if="tip.author">{{ t('tip.by') }} {{ tip.author.username }}</span>
-        <span v-else-if="tip.userName">{{ t('tip.by') }} {{ tip.userName }}</span>
       </div>
     </div>
   </div>
