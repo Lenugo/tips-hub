@@ -14,7 +14,9 @@
     "loadMore": "Scroll para cargar más",
     "noTipsFound": "No se encontraron consejos",
     "noTipsDescription": "No hay consejos disponibles para la categoría seleccionada.",
-    "viewAllTips": "Ver todos los consejos"
+    "viewAllTips": "Ver todos los consejos",
+    "emptyView": "Crea tu primer consejo",
+    "emptyViewDescription": "Crea tu primer consejo compartiendo tu experiencia con otros."
   },
   "categories": {
     "all": "Todos",

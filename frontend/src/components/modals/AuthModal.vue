@@ -62,8 +62,9 @@ const handleSubmit = async () => {
       error.value = t('validations.passwordTooShort')
       return
     }
+  }
 
-  } else {
+  if (currentMode.value ==='register') {
     if (!form.value.username || !form.value.email || !form.value.password || !form.value.confirmPassword) {
       error.value = t('validations.completeAllFields')
       return
@@ -103,7 +104,9 @@ const handleSubmit = async () => {
         await userStore.checkAuth()
         emit('close')
       }
-    } else {
+    }
+
+    if (currentMode.value === 'register') {
       success = await userStore.register({
         email: form.value.email,
         username: form.value.username,

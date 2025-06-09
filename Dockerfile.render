@@ -1,0 +1,68 @@
+# Multi-stage build for Node.js backend
+FROM node:20-alpine AS builder
+
+# Install build dependencies
+RUN apk add --no-cache \
+  python3 \
+  make \
+  g++ \
+  libc6-compat \
+  build-base
+
+WORKDIR /app
+
+# Install pnpm
+RUN npm install -g pnpm
+
+# Copy package files
+COPY backend/package.json ./
+COPY backend/pnpm-lock.yaml ./
+
+# Install dependencies
+RUN pnpm install --frozen-lockfile
+
+# Copy source code
+COPY backend/src ./src
+COPY backend/tsconfig.json ./
+
+# Build the application
+RUN pnpm run build
+
+# Production stage
+FROM node:20-alpine AS production
+
+# Install runtime dependencies
+RUN apk add --no-cache \
+  python3 \
+  make \
+  g++ \
+  libc6-compat
+
+WORKDIR /app
+
+# Install pnpm
+RUN npm install -g pnpm
+
+# Copy package files and install production dependencies
+COPY backend/package.json ./
+COPY backend/pnpm-lock.yaml ./
+RUN pnpm install --prod --frozen-lockfile
+
+# Rebuild native modules for production
+RUN pnpm rebuild bcrypt
+
+# Copy built application from build stage
+COPY --from=builder /app/dist ./dist
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && \
+  adduser -S backend -u 1001 -G nodejs
+
+# Change ownership
+RUN chown -R backend:nodejs /app
+USER backend
+
+EXPOSE 4000
+
+# Start the application
+CMD ["node", "dist/server.js"]

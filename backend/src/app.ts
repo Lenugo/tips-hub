@@ -5,9 +5,9 @@ import swaggerUi from 'swagger-ui-express'
 
 import advicesRoutes from './routes/advices.route'
 import authRoutes from './routes/auth.route'
+import healthRoute from './routes/health.route'
 
 import { corsConfig } from './config/cors'
-import swaggerDocs from '../swagger.json'
 
 const app = express()
 
@@ -17,8 +17,18 @@ app.use(cookieParser())
 app.use(cors(corsConfig))
 
 /** Routes */
-app.use('/advices', advicesRoutes)
-app.use('/auth', authRoutes)
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
+app.use('/api/advices', advicesRoutes)
+app.use('/api/auth', authRoutes)
+app.use('/api/health', healthRoute) /** for testing purposes */
+
+/** Conditionally import swaggerDocs and set up swagger UI */
+let swaggerDocs;
+try {
+  swaggerDocs = require('../swagger.json');
+  app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+} catch {
+  console.error('Swagger file not found, swagger UI will not be available. Make sure you have generated the swagger.json file.');
+}
+
 
 export default app

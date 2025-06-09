@@ -1,7 +1,9 @@
 import { envs } from './envs'
 
 export const corsConfig = {
-  origin: `${ envs.NODE_ENV === 'development' ? 'http://localhost:5173': ''}`,
+  origin: [    
+    envs.NODE_ENV === 'production' ? 'https://your-frontend-domain.vercel.app' : 'http://localhost:5173'
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],

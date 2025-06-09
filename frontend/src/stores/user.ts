@@ -67,7 +67,6 @@ export const useUserStore = defineStore('user', () => {
         message: 'Registration successful',
         type: NotificationType.Success
       }
-      isLoggedIn.value = true
 
       return true
     } catch {
@@ -75,7 +74,6 @@ export const useUserStore = defineStore('user', () => {
         message: 'Registration failed',
         type: NotificationType.Error
       }
-      isLoggedIn.value = false
       return false
     } finally {
       isLoading.value = false

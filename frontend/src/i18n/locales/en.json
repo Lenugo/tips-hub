@@ -14,7 +14,9 @@
     "loadMore": "Scroll to load more",
     "noTipsFound": "No tips found",
     "noTipsDescription": "There are no tips available for the selected category.",
-    "viewAllTips": "View all tips"
+    "viewAllTips": "View all tips",
+    "emptyView": "Create your first tip",
+    "emptyViewDescription": "Create your first tip by sharing your experience with others."
   },
   "categories": {
     "all": "All",

@@ -5,10 +5,12 @@ import { useI18n } from 'vue-i18n'
 import { useTipsStore } from '../stores/tips'
 import { useUserStore } from '../stores/user'
 import { TipCard, CategoryFilter, AuthModal } from '../components'
+import { useRouter } from 'vue-router'
 
 const { t } = useI18n()
 const tipsStore = useTipsStore()
 const userStore = useUserStore()
+const router = useRouter()
 const isLoading = ref(false)
 const currentPage = ref(1)
 const limit = ref(10)
@@ -80,6 +82,14 @@ const handleLike = async (tipId: string) => {
 const closeLoginModal = () => {
   isLoginModalOpen.value = false
 }
+
+const handleEmptyCreate = () => {
+  if (!userStore.isLoggedIn) {
+    isLoginModalOpen.value = true
+    return
+  }
+  router.push('/create')
+}
 </script>
 
 <template>
@@ -121,16 +131,26 @@ const closeLoginModal = () => {
     
     <!-- Empty state -->
     <div v-else-if="!isLoading" class="text-center py-12">
-      <div class="mb-4 text-4xl">🔍</div>
-      <h3 class="text-xl font-medium text-slate-800 mb-2">{{ t('home.noTipsFound') }}</h3>
+      <div v-if="selectedCategory" class="mb-4 text-4xl">🔍</div>
+      <h3 class="text-xl font-medium text-slate-800 mb-2">{{ !selectedCategory ? t('home.emptyView') : t('home.noTipsFound') }}</h3>
       <p class="text-slate-600 mb-4">
-        {{ t('home.noTipsDescription') }}
+        {{ !selectedCategory ? t('home.emptyViewDescription') : t('home.noTipsDescription') }}
       </p>
-      <button 
+      
+      <button
+        v-if="selectedCategory !== null"
         @click="handleCategorySelect(null)" 
         class="btn btn-teal hover:cursor-pointer bg-teal-500 text-white"
       >
         {{ t('home.viewAllTips') }}
+      </button>
+      
+      <button 
+        v-else
+        @click="handleEmptyCreate()" 
+        class="btn btn-teal hover:cursor-pointer bg-teal-500 text-white flex items-center justify-center mx-auto"
+      >
+        <span class="mr-1">+</span> {{ t('profile.createTip') }}
       </button>
     </div>
     

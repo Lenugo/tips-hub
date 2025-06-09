@@ -5,9 +5,12 @@
   "main": "server.ts",
   "scripts": {
     "dev": "tsnd --respawn --clear src/server.ts",
-    "build": "rimraf ./dist && tsc",
     "swagger": "rimraf ./swagger.json && tsnd src/config/swagger.ts --respawn",
-    "start": "pnpm run build && node dist/server.js"
+    "build": "pnpm run swagger && tsc",
+    "start": "node dist/server.js",
+    "start:prod": "NODE_ENV=production node dist/server.js",
+    "docker:build": "docker build -t tips-hub-backend .",
+    "docker:run": "docker run -p 4000:4000 tips-hub-backend"
   },
   "keywords": [],
   "author": "",
@@ -35,5 +38,8 @@
     "rimraf": "^6.0.1",
     "swagger-autogen": "^2.23.7",
     "ts-node-dev": "^2.0.0"
+  }, 
+  "pnpm": {
+    "onlyBuiltDependencies": ["bcrypt"]
   }
 }

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "tips-hub",
+  "version": "1.0.0",
+  "description": "Tips Hub - Docker Image Backend API",
+  "scripts": {
+    "dev": "cd backend && npm run dev",
+    "build": "cd backend && npm run build",
+    "start": "cd backend && npm run start:prod",
+    "test:complete-local": "./test-complete-local.sh",
+    "test:verify-local": "./test-verify-local.sh",
+    "test:render": "./test-render-local.sh",
+    "test:atlas": "./test-atlas-local.sh",
+    "build:render": "docker build -f Dockerfile.render -t tips-hub-render .",
+    "docker:build": "docker build -f Dockerfile.render -t tips-hub-backend .",
+    "docker:run": "docker run -p 4000:4000 tips-hub-backend",
+    "docker:up-local": "docker compose up backend --build",
+    "docker:deploy": "./deploy-docker.sh",
+    "deploy:render": "./deploy-to-render.sh",
+    "clean": "docker system prune -af && docker volume prune -f"
+  },
+  "keywords": ["express", "mongodb", "render", "docker"],
+  "author": "Lenugo",
+  "license": "MIT"
+}

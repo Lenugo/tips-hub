@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: tips-hub-backend
+    runtime: docker
+    dockerfilePath: ./Dockerfile.render
+    plan: free
+    region: oregon
+    branch: main
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 4000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: MONGODB_URI
+        value: "CONFIGURE_IN_DASHBOARD"
+      - key: MONGO_USERNAME
+        value: "CONFIGURE_IN_DASHBOARD"
+      - key: MONGO_CLUSTER
+        value: "CONFIGURE_IN_DASHBOARD"
+      - key: MONGO_DB_NAME
+        value: tips-hub-db
