@@ -7,7 +7,7 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig(({ command, mode }) => {
-  const base = '/tips-hub/'
+  const base = mode === 'production' ? '/tips-hub/' : '/'  
   
   return {
     base,

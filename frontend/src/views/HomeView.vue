@@ -99,6 +99,7 @@ const handleEmptyCreate = () => {
     
     <!-- Categories filter -->
     <CategoryFilter 
+      v-if="tips.length > 0 && !selectedCategory"
       :categories="categories" 
       :selectedCategory="selectedCategory"
       @select="handleCategorySelect"
