@@ -19,8 +19,6 @@ app.use(cors(corsConfig))
 /** Routes */
 app.use('/api/advices', advicesRoutes)
 app.use('/api/auth', authRoutes)
-app.use('/api/health', healthRoute) /** for testing purposes */
-
 /** Conditionally import swaggerDocs and set up swagger UI */
 let swaggerDocs;
 try {
@@ -29,6 +27,7 @@ try {
 } catch {
   console.error('Swagger file not found, swagger UI will not be available. Make sure you have generated the swagger.json file.');
 }
+app.use('/health', healthRoute) /** for deploy purposes */
 
 
 export default app

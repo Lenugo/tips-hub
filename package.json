@@ -7,7 +7,7 @@
     "dev": "cd backend && npm run dev",
     "build": "cd backend && npm run build",
     "start": "cd backend && npm run start:prod",
-    "test:complete-local": "./test-complete-local.sh",
+    "test:complete-flow": "./test-complete-flow.sh",
     "test:verify-local": "./test-verify-local.sh",
     "test:render": "./test-render-local.sh",
     "test:atlas": "./test-atlas-local.sh",

@@ -101,7 +101,7 @@ echo -e "${BLUE}🔍 Step 3: Testing API endpoints...${NC}"
 
 # Test health endpoint
 echo -n "Testing health endpoint... "
-if curl -f -s http://localhost:4000/api/health > /dev/null; then
+if curl -f -s http://localhost:4000/health > /dev/null; then
     echo -e "${GREEN}✅ PASSED${NC}"
 else
     echo -e "${RED}❌ FAILED${NC}"

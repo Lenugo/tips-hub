@@ -63,7 +63,7 @@ if docker ps | grep -q $CONTAINER_NAME; then
     echo "🔍 Testing health endpoint..."
     sleep 5
     
-    if curl -f http://localhost:4000/api/health > /dev/null 2>&1; then
+    if curl -f http://localhost:4000/health > /dev/null 2>&1; then
         echo "✅ Health check passed! Atlas connection working!"
     else
         echo "⚠️  Health check failed - checking logs..."

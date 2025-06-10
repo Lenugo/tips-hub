@@ -55,7 +55,7 @@ if docker ps | grep -q $CONTAINER_NAME; then
     echo "🔍 Testing health endpoint..."
     sleep 5
     
-    if curl -f http://localhost:4000/api/health > /dev/null 2>&1; then
+    if curl -f http://localhost:4000/health > /dev/null 2>&1; then
         echo "✅ Health check passed!"
     else
         echo "⚠️  Health check failed (this might be normal if MongoDB is not running locally)"

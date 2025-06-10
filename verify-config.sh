@@ -29,7 +29,7 @@ fi
 echo -n "Checking render.yaml... "
 if [ -f "render.yaml" ]; then
     if grep -q "dockerfilePath: ./Dockerfile.render" render.yaml && \
-        grep -q "healthCheckPath: /api/health" render.yaml; then
+        grep -q "healthCheckPath: /health" render.yaml; then
         echo -e "${GREEN}✅ Valid${NC}"
     else
         echo -e "${RED}❌ Invalid configuration${NC}"
