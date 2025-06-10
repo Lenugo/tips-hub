@@ -1,18 +1,9 @@
-import { envs } from './envs'
 
-const originConfig = () => {
-  let origins: string[] = []
-  if (envs.NODE_ENV !== 'production') {
-    origins = ['http://localhost:5173']
-  } else {
-    origins = ['https://lenugo.github.io', 'https://lenugo.github.io/tips-hub']
-  }
-
-  return origins.flat()
-}
-
+/**
+ * CORS Configuration
+ */
 export const corsConfig = {
-  origin: originConfig(),
+  origin: ['http://localhost:5173', 'https://lenugo.github.io/tips-hub'].flat(),
   credentials: true,
   methods: ['GET', 'POST', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],

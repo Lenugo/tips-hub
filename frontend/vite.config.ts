@@ -7,8 +7,7 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig(({ command, mode }) => {
-  // Para GitHub Pages, la base debe ser el nombre del repositorio
-  const base = mode === 'production' ? '/tips-hub/' : '/'
+  const base = '/tips-hub/'
   
   return {
     base,

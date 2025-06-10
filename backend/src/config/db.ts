@@ -9,7 +9,7 @@ const getDatabaseConfig = () => {
 
   // Fallback local development 
   return {
-    uri: `mongodb://localhost:27017/${envs.MONGO_DB_NAME}`,
+    uri: `mongodb://127.0.0.1:27017/${envs.MONGO_DB_NAME}`,
   }
 }
 

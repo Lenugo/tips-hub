@@ -1,4 +1,4 @@
-import { config } from 'dotenv';
+import { config } from 'dotenv'
 
 config()
 
@@ -8,9 +8,6 @@ config()
  * @property {string} JWT_SECRET - Secret key for JWT token generation
  * @property {string} NODE_ENV - Node environment (development/production)
  * @property {string} MONGODB_URI - MongoDB connection URI
- * @property {string} MONGO_USERNAME - MongoDB username
- * @property {string} MONGO_PASSWORD - MongoDB password
- * @property {string} MONGO_CLUSTER - MongoDB cluster
  * @property {string} MONGO_DB_NAME - MongoDB database name
  */
 export const envs = {
