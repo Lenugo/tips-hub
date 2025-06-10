@@ -1,5 +1,6 @@
 import swaggerAutogen from 'swagger-autogen'
 import path from 'node:path'
+import { envs } from './envs'
 
 const doc = {
   info: {
@@ -8,8 +9,8 @@ const doc = {
     description: 'Tips Hub API - A comprehensive RESTful service providing seamless management of tips, recommendations and user interactions for the Tips Hub platform. Features include user authentication, tip creation/management, and advanced search capabilities.',
     contact: { name: 'Lenugo' }
   },
-  host: 'localhost:4000',
-  schemes: ['http'],
+  host: envs.NODE_ENV === 'production' ? 'https://tips-hub-backend-latest.onrender.com' : 'localhost:4000',
+  schemes: envs.NODE_ENV === 'production' ? ['https'] : ['http'],
   securityDefinitions: {
     cookieAuth: {
       type: 'apiKey',

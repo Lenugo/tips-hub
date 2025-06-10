@@ -20,10 +20,11 @@ app.use(cors(corsConfig))
 app.use('/api/advices', advicesRoutes)
 app.use('/api/auth', authRoutes)
 /** Conditionally import swaggerDocs and set up swagger UI */
-let swaggerDocs;
+let swaggerDocs
 try {
-  swaggerDocs = require('../swagger.json');
-  app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+  swaggerDocs = require('../swagger.json')
+  app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
+  console.log('🗒️ Swagger UI available at /api/docs')
 } catch {
   console.error('Swagger file not found, swagger UI will not be available. Make sure you have generated the swagger.json file.');
 }
