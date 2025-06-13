@@ -5,7 +5,7 @@
   "main": "server.ts",
   "scripts": {
     "dev": "tsnd --respawn --clear src/server.ts",
-    "swagger": "rimraf ./swagger.json && tsnd src/config/swagger.ts --respawn",
+    "swagger": "rimraf ./swagger.json && ts-node src/config/swagger.ts",
     "build": "pnpm run swagger && tsc",
     "start": "node dist/server.js",
     "start:prod": "NODE_ENV=production node dist/server.js",
@@ -37,9 +37,12 @@
     "@types/swagger-ui-express": "^4.1.8",
     "rimraf": "^6.0.1",
     "swagger-autogen": "^2.23.7",
+    "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0"
-  }, 
+  },
   "pnpm": {
-    "onlyBuiltDependencies": ["bcrypt"]
+    "onlyBuiltDependencies": [
+      "bcrypt"
+    ]
   }
 }

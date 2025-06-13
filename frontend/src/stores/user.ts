@@ -44,7 +44,7 @@ export const useUserStore = defineStore('user', () => {
         message: 'Login successful',
         type: NotificationType.Success
       }
-      return await checkAuth()
+      return true
     } catch (error: any) {
       notificationValues.value = {
         message: !!(error.response?.data?.message) ? `Login Failed. ${error.response.data.message}` :'Login failed',
