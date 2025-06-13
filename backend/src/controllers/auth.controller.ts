@@ -4,6 +4,8 @@ import { hashPasword, comparePassword } from '../services/password.service'
 import { generateToken, verifyTokenAndGetUser } from '../services/auth.service'
 import { RegisterObjectSchema, LoginObjectSchema } from '../schemas/auth.schema'
 import { validateSchema } from '../utils/validation.utils'
+import { envs } from '../config/envs'
+import { ENVIROMENT_MODE } from '../config/constants'
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -48,8 +50,8 @@ export const register = async (req: Request, res: Response) => {
   
     res.cookie('token', token, {
       httpOnly: true,
-      // secure: envs.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: envs.NODE_ENV === ENVIROMENT_MODE.PRODUCTION,
+      sameSite: envs.NODE_ENV === ENVIROMENT_MODE.PRODUCTION ? 'none' : 'strict'
     })
     
     res.status(201).json({ success: true, message: 'User created successfully' })
@@ -99,8 +101,8 @@ export const login = async (req: Request, res: Response) => {
 
     res.cookie('token', token, {
       httpOnly: true,
-      // secure: envs.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: envs.NODE_ENV === ENVIROMENT_MODE.PRODUCTION,
+      sameSite: envs.NODE_ENV === ENVIROMENT_MODE.PRODUCTION ? 'none' : 'strict'
     })
 
     res.status(200).json({ success: true, message: 'Login successful' })

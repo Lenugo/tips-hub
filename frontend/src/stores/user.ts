@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import api from '../utils/api'
 import { type UserSelected, type LoginBody, type RegisterBody, NotificationType } from '@/types'
+import type { AxiosError } from 'axios'
 
 export const useUserStore = defineStore('user', () => {
   const currentUser = ref<UserSelected | null>(null)
@@ -44,9 +45,9 @@ export const useUserStore = defineStore('user', () => {
         type: NotificationType.Success
       }
       return await checkAuth()
-    } catch {
+    } catch (error: any) {
       notificationValues.value = {
-        message: 'Login failed',
+        message: !!(error.response?.data?.message) ? `Login Failed. ${error.response.data.message}` :'Login failed',
         type: NotificationType.Error
       } 
       isLoggedIn.value = false

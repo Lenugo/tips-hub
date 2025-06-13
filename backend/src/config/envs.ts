@@ -1,4 +1,5 @@
 import { config } from 'dotenv'
+import { ENVIROMENT_MODE } from './constants'
 
 config()
 
@@ -13,7 +14,7 @@ config()
 export const envs = {
   PORT: process.env.PORT ?? '3001',
   JWT_SECRET: process.env.JWT_SECRET ?? 'unkown',
-  NODE_ENV: process.env.NODE_ENV ?? 'development',
+  NODE_ENV: process.env.NODE_ENV ?? ENVIROMENT_MODE.DEVELOPMENT,
   MONGODB_URI: process.env.MONGO_URI ?? process.env.MONGODB_URI ?? '',
   MONGO_DB_NAME: process.env.MONGO_DB_NAME ?? 'tips-hub-db',
 }

@@ -4,7 +4,8 @@
   "version": "1.0.0",
   "description": "Tips Hub - Docker Image Backend API",
   "scripts": {
-    "dev": "cd backend && npm run dev",
+    "dev:back": "cd backend && npm run dev",
+    "dev:front": "cd frontend && bun run dev",
     "build": "cd backend && npm run build",
     "start": "cd backend && npm run start:prod",
     "test:complete-flow": "./test-complete-flow.sh",
