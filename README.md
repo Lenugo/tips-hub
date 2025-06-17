@@ -25,7 +25,7 @@ Tips Hub is a web platform for sharing, managing, and discovering tips and recom
 - **TypeScript** v5
 - **MongoDB** (Atlas)
 - **Mongoose** v8
-- **JWT** for authentication
+- **JWT** for authentication (Bearer token, not cookies)
 - **bcrypt** for password hashing
 - **Valibot** for data validation
 - **Swagger UI Express** for API docs
@@ -87,7 +87,7 @@ tips-hub/
 - **Middlewares**: For validation, authentication, and error handling.
 - **Service Layer**: Business logic decoupled from controllers.
 - **Centralized Validation**: Using Valibot schemas.
-- **Authentication**: JWT in HTTP-only cookies, with route protection middleware.
+- **Authentication**: JWT via Bearer token in the `Authorization` header (no cookies).
 - **API Documentation**: Swagger auto-generated from route annotations.
 
 ### Frontend
@@ -161,6 +161,13 @@ Both services include Dockerfiles and support multi-stage builds for production 
 - To generate the Swagger documentation locally, run:  
   ```bash
   pnpm run swagger
+  ```
+
+- **Authentication:**  
+  All protected endpoints require a JWT Bearer token in the `Authorization` header.  
+  Example:  
+  ```
+  Authorization: Bearer <your_token>
   ```
 
 ---

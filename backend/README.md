@@ -10,7 +10,7 @@ The Tips Hub Backend is a RESTful API service built with Node.js, Express, and M
 - **Package Manager**: pnpm v8.10.0
 - **Framework**: Express.js v5.1.0
 - **Database**: MongoDB v8.14.1
-- **Authentication**: JWT (jsonwebtoken)
+- **Authentication**: JWT (jsonwebtoken, Bearer token in header)
 - **Password Hashing**: bcrypt
 - **Validation**: valibot
 - **API Documentation**: Swagger UI Express
@@ -48,8 +48,6 @@ The Tips Hub Backend is a RESTful API service built with Node.js, Express, and M
 1. **Auth Routes** (`/auth`):
    - POST `/register`: Register a new user
    - POST `/login`: Authenticate a user and issue JWT token
-   - POST `/logout`: Invalidate user session
-   - GET `/check`: Verify token validity
    - GET `/profile`: Retrieve authenticated user profile
 
 2. **Advice Routes** (`/advices`):
@@ -81,10 +79,10 @@ The Tips Hub Backend is a RESTful API service built with Node.js, Express, and M
 
 ### Authentication
 
-- JWT-based authentication using cookies
+- JWT-based authentication using Bearer token in the `Authorization` header (no cookies)
 - Token generation and verification via `auth.service.ts`
 - Password hashing and comparison via `password.service.ts`
-- Authentication middleware (`user.middleware.ts`) for protected routes
+- Authentication middleware (`auth.middleware.ts`) for protected routes
 
 ### Validation
 
@@ -130,3 +128,7 @@ pnpm run dev
 # Generate Swagger documentation
 pnpm run swagger
 ```
+
+## Authentication Example
+
+All protected endpoints require a JWT Bearer token in the `Authorization` header:
