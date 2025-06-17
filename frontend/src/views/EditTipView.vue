@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useTipsStore } from '../stores/tips'
-import { useUserStore } from '../stores/user'
+import { useTipsStore } from '../store/tips'
+import { useUserStore } from '../store/user'
 import { TipForm } from '../components'
 import type { Tip } from '../types'
 import { useI18n } from 'vue-i18n'

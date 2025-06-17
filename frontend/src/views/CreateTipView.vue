@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useTipsStore } from '../stores/tips'
-import { useUserStore } from '../stores/user'
+import { useTipsStore } from '../store/tips'
+import { useUserStore } from '../store/user'
 import { useI18n } from 'vue-i18n'
 import { getCategoryLabel } from '../utils/i18n'
 
@@ -24,11 +24,8 @@ const categories = computed(() => tipsStore.categories)
 onMounted(async () => {
   // Check if user is authenticated
   if (!userStore.isLoggedIn) {
-    await userStore.checkAuth();
-    if (!userStore.isLoggedIn) {
-      // Redirect to login if not authenticated
-      router.push('/login');
-    }
+    // Redirect to login if not authenticated
+    router.push('/login')
   }
 })
 
@@ -66,7 +63,7 @@ const handleSubmit = async () => {
     await tipsStore.createTip(newTip)   
     router.push('/')
   } catch {
-    error.value = 'Error al crear el consejo. Inténtalo de nuevo.'
+    error.value = 'Error creating advice. Try again.'
   } finally {
     isSubmitting.value = false
   }

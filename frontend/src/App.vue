@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { onMounted, ref, watch, nextTick } from 'vue'
+import { ref, watch } from 'vue'
 import { TheNavbar, MobileNavbar, ToastNotification } from './components'
-import { useTipsStore } from './stores/tips'
-import { useUserStore } from './stores/user'
+import { useTipsStore } from './store/tips'
+import { useUserStore } from './store/user'
 import { NotificationType } from './types'
+import { useRoute } from 'vue-router'
 
 const tipsStore = useTipsStore()
 const userStore = useUserStore()
-const isLoading = ref(true)
+const route = useRoute()
 
 const notification = ref({
   show: false,
@@ -35,45 +36,21 @@ const handleClose = () => {
   }
 }
 
-
 watch(() => (userStore.notificationValues), (newNotification) => {
   if (!newNotification.type) return
   showNotification(userStore.notificationValues.message!, userStore.notificationValues.type as NotificationType)
-
 })
 
 watch(() => (tipsStore.notificationValues), (newNotification) => {
   if (!newNotification.type) return
   showNotification(tipsStore.notificationValues.message!, tipsStore.notificationValues.type as NotificationType)
 })
-
-onMounted(async () => {
-  try {
-    const [tipsResult, authResult] = await Promise.allSettled([
-      tipsStore.getAllTips(),
-      userStore.checkAuth()
-    ])
-
-    if (tipsResult.status === 'rejected') {
-      showNotification('Failed to fetch tips. Please try again or later', NotificationType.Error)
-    }
-
-    if (authResult.status === 'rejected') {
-      showNotification('Failed to authenticate. Please try again or later', NotificationType.Error)
-    }
-
-  } catch (error) {
-    showNotification('An unexpected error occurred. Please try again or later', NotificationType.Error)
-  } finally {
-    isLoading.value = false;
-  }
-})
 </script>
 
 <template>
   <div class="min-h-screen flex flex-col">
     <!-- Global loading overlay -->
-    <div v-if="isLoading" class="fixed inset-0 bg-white z-50 flex items-center justify-center">
+    <div v-if="tipsStore.isLoading && route.name === 'home'" class="fixed inset-0 bg-white z-50 flex items-center justify-center">
       <div class="flex flex-col items-center">
         <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500 mb-4"></div>
         <p class="text-teal-600 font-medium">Loading...</p>

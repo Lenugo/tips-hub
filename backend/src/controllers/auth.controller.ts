@@ -4,8 +4,6 @@ import { hashPasword, comparePassword } from '../services/password.service'
 import { generateToken, verifyTokenAndGetUser } from '../services/auth.service'
 import { RegisterObjectSchema, LoginObjectSchema } from '../schemas/auth.schema'
 import { validateSchema } from '../utils/validation.utils'
-import { envs } from '../config/envs'
-import { ENVIROMENT_MODE } from '../config/constants'
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -40,19 +38,6 @@ export const register = async (req: Request, res: Response) => {
     })
     
     await newUser.save()
-    
-    const token = generateToken({
-      _id: newUser._id.toString(),
-      username: newUser.username,
-      email: newUser.email,
-      password: newUser.password
-    })
-  
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: envs.NODE_ENV === ENVIROMENT_MODE.PRODUCTION,
-      sameSite: envs.NODE_ENV === ENVIROMENT_MODE.PRODUCTION ? 'none' : 'strict'
-    })
     
     res.status(201).json({ success: true, message: 'User created successfully' })
   } catch (error) {
@@ -99,35 +84,19 @@ export const login = async (req: Request, res: Response) => {
       password: user.password
     })
 
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: envs.NODE_ENV === ENVIROMENT_MODE.PRODUCTION,
-      sameSite: envs.NODE_ENV === ENVIROMENT_MODE.PRODUCTION ? 'none' : 'strict'
+    res.status(200).json({
+      success: true,
+      message: 'Login successful',
+      token,
+      user: {
+        id: user.id,
+        userName: user.username,
+        email: user.email
+      }
     })
-
-    res.status(200).json({ success: true, message: 'Login successful' })
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ success: false, message: 'Internal server error' });
-  }
-}
-
-export const logout = async (req: Request, res: Response) => {
-  try {
-    if (!req.cookies.token) {
-      res.status(401).json({ success: false, message: 'Unauthorized' })
-      return
-    }
-
-    res.clearCookie('token', {
-      httpOnly: true,
-      sameSite: 'strict'
-    })
-
-    res.status(200).json({ success: true, message: 'Logged out successfully' })
-  } catch (error) {
-    console.error('Logout error:', error)
-    res.status(500).json({ success: false, message: 'Internal server error' })
   }
 }
 

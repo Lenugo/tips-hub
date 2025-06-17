@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useUserStore } from '../../stores/user'
+import { useUserStore } from '../../store/user'
 import { useI18n } from 'vue-i18n'
 
 const props = defineProps<{
@@ -99,23 +99,32 @@ const handleSubmit = async () => {
         email: form.value.email,
         password: form.value.password
       })
-      
-      if (success) {
-        await userStore.checkAuth()
-        emit('close')
+
+      if (!success) {
+        error.value = t('validations.invalidCredentials')
+        return
       }
+      emit('close')
     }
 
     if (currentMode.value === 'register') {
-      success = await userStore.register({
+      const registerResponse: any = await userStore.register({
         email: form.value.email,
         username: form.value.username,
         password: form.value.password
       })
-      
-      if (success) {
-        emit('close')
+
+      if (registerResponse?.status === 409) {
+        error.value = t('validations.emailAlreadyExists')
+        return
       }
+
+      if (!registerResponse.success) {
+        error.value = t('validations.registrationFailed')
+        return
+      }
+
+      emit('close')
     }
   } catch {
     error.value = t('auth.genericError')

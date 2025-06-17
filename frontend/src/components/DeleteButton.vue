@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useTipsStore } from '../stores/tips'
+import { useTipsStore } from '../store/tips'
 import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{

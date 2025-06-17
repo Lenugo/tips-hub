@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useTipsStore } from '../stores/tips'
-import { useUserStore } from '../stores/user'
+import { useTipsStore } from '../store/tips'
+import { useUserStore } from '../store/user'
 import { AuthModal, TipCard, DeleteButton } from '../components'
 import { useI18n } from 'vue-i18n'
 import { getCategoryLabel } from '../utils/i18n'

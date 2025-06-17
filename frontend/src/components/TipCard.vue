@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import { format } from 'date-fns'
 import { es, enUS } from 'date-fns/locale'
 import { useI18n } from 'vue-i18n'
-import { useUserStore } from '../stores/user'
+import { useUserStore } from '../store/user'
 import type { Tip } from '../types'
 import { LikeButton } from './'
 

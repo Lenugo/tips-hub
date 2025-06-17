@@ -89,7 +89,13 @@ router.get('/user', authenticateToken, (req, res) => {
     #swagger.path = '/advices/user'
     #swagger.method = 'get'
     #swagger.description = 'Endpoint to get all tips by user'
-    #swagger.security = [{ "cookieAuth": [] }]
+    #swaagger.headers = {
+    Authorization: {
+      description: 'Bearer token for authentication',
+      type: 'string',
+      required: true
+    }
+    #swagger.security = [{ "bearerAuth": [] }]
   */
   /* #swagger.responses[200] = {
     description: 'List of user tips',
@@ -215,7 +221,13 @@ router.post('/', authenticateToken, (req, res) => {
    * #swagger.path = '/advices'
    * #swagger.method = 'post'
    * #swagger.description = 'Endpoint to create a new tip'
-   * #swagger.security = [{ "cookieAuth": [] }]
+   * #swaagger.headers = {
+    Authorization: {
+      description: 'Bearer token for authentication',
+      type: 'string',
+      required: true
+    }
+   * #swagger.security = [{ "bearerAuth": [] }]
    */
   /* #swagger.parameters['obj'] = {
     in: 'body',
@@ -283,7 +295,13 @@ router.post('/likes/:id', authenticateToken, (req, res) => {
    * #swagger.path = '/advices/likes/{id}'
    * #swagger.method = 'post'
    * #swagger.description = 'Endpoint to like a tip'
-   * #swagger.security = [{ "cookieAuth": [] }]
+   * #swaagger.headers = {
+    Authorization: {
+      description: 'Bearer token for authentication',
+      type: 'string',
+      required: true
+    }
+   * #swagger.security = [{ "bearerAuth": [] }]
    */
   /* #swagger.parameters['id'] = {
     in: 'path',
@@ -357,7 +375,13 @@ router.patch('/:id', authenticateToken, (req, res) => {
    * #swagger.path = '/advices/{id}'
    * #swagger.method = 'patch'
    * #swagger.description = 'Endpoint to update a tip'
-   * #swagger.security = [{ "cookieAuth": [] }]
+   * #swaagger.headers = {
+    Authorization: {
+      description: 'Bearer token for authentication',
+      type: 'string',
+      required: true
+    }
+   * #swagger.security = [{ "bearerAuth": [] }]
    */
   /* #swagger.parameters['id'] = {
     in: 'path',
@@ -440,7 +464,13 @@ router.delete('/:id', authenticateToken, (req, res) => {
    * #swagger.path = '/advices/{id}'
    * #swagger.method = 'delete'
    * #swagger.description = 'Endpoint to delete a tip'
-   * #swagger.security = [{ "cookieAuth": [] }]
+   * #swaagger.headers = {
+    Authorization: {
+      description: 'Bearer token for authentication',
+      type: 'string',
+      required: true
+    }
+   * #swagger.security = [{ "bearerAuth": [] }]
    */
   /* #swagger.parameters['id'] = {
     in: 'path',

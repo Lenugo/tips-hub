@@ -1,45 +1,39 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import api from '../utils/api'
-import { type UserSelected, type LoginBody, type RegisterBody, NotificationType } from '@/types'
-import type { AxiosError } from 'axios'
+import { type UserSelected, type LoginBody, type RegisterBody, NotificationType, type LoginResponse, type StoredUserInfo } from '@/types'
 
 export const useUserStore = defineStore('user', () => {
-  const currentUser = ref<UserSelected | null>(null)
+  const storedUserInfo: StoredUserInfo = JSON.parse(localStorage.getItem('userInfo') ?? '{}') || {}
+  const isLoggedInStored = storedUserInfo.token && storedUserInfo.user ? true : false 
+  const currentUser = ref<UserSelected | null>(storedUserInfo ? storedUserInfo.user : null)
   const isLoading = ref(false)
-  const isLoggedIn = ref(false)
+  const isLoggedIn = ref(isLoggedInStored || false)
   const notificationValues = ref<{ [key: string]: string }>({ message: '', type: '' })
-  
-  // Check authentication status with the server
-  const checkAuth = async () => {
-    isLoading.value = true    
 
-    try {
-      const response = await api.get('/auth/check')
-      if (response.data.authenticated) {
-        currentUser.value = response.data.user
-        isLoggedIn.value = true
-        return true
-      } else {
-        currentUser.value = null
-        isLoggedIn.value = false
-        return false
-      }
-    } catch {
-      currentUser.value = null
-      isLoggedIn.value = false
-      return false
-    } finally {
-      isLoading.value = false
-    }
-  }
-  
   const login = async ({ email, password }: LoginBody) => {
     isLoading.value = true
     notificationValues.value = { message: '', type: '' }
 
     try {
-      await api.post('/auth/login', { email, password })
+      const { data, status } = await api.post('/auth/login', { email, password })
+      const response: LoginResponse = data
+
+      if (status !== 200 || !data.success) {
+        notificationValues.value = {
+          message: 'Login failed',
+          type: NotificationType.Error
+        }
+        isLoggedIn.value = false
+        currentUser.value = null
+        return false
+      }
+
+      isLoggedIn.value = true
+      currentUser.value = response.user
+      const userInfo = { user: response.user, token: response.token }
+      localStorage.setItem('userInfo', JSON.stringify(userInfo))
+
       notificationValues.value = {
         message: 'Login successful',
         type: NotificationType.Success
@@ -63,19 +57,19 @@ export const useUserStore = defineStore('user', () => {
     notificationValues.value = { message: '', type: '' }
 
     try {
-      await api.post('/auth/register', { email, password, username })
+      const { status } = await api.post('/auth/register', { email, password, username })
       notificationValues.value = {
         message: 'Registration successful',
         type: NotificationType.Success
       }
 
-      return true
-    } catch {
+      return { status, success: true }
+    } catch (error: any) {
       notificationValues.value = {
         message: 'Registration failed',
         type: NotificationType.Error
       }
-      return false
+      return { status: error.response.status, success: false }
     } finally {
       isLoading.value = false
     }
@@ -86,7 +80,7 @@ export const useUserStore = defineStore('user', () => {
     notificationValues.value = { message: '', type: '' }
 
     try {
-      await api.post('/auth/logout')
+      localStorage.removeItem('userInfo')
       
       notificationValues.value = {
         message: 'Logout successful',
@@ -137,7 +131,6 @@ export const useUserStore = defineStore('user', () => {
     login,
     register,
     logout,
-    checkAuth,
     getUserInfo
   }
 })

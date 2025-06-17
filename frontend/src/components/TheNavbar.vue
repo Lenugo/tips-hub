@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useUserStore } from '../stores/user'
+import { useUserStore } from '../store/user'
 import { useI18n } from 'vue-i18n'
 import { AuthModal, LanguageSwitcher } from './'
 

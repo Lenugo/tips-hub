@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { register, login, logout, userProfile, verifyToken } from '../controllers/auth.controller'
+import { register, login, userProfile } from '../controllers/auth.controller'
 import { authenticateToken } from '../middlewares/user.middleware'
 
 const router = Router()
@@ -114,80 +114,19 @@ router.post('/login', (req, res) => {
   login(req, res)
 })
 
-router.post('/logout', (req, res) => {
-  /**
-   * #swagger.tags = ['Auth']
-   * #swagger.path = '/auth/logout'
-   * #swagger.method = 'post'
-   * #swagger.description = 'Endpoint to logout a user.'
-   */
-  /* #swagger.responses[200] = {
-    description: 'User logged out successfully',
-    schema: {
-      success: true,
-      message: 'User logged out successfully'
-    }
-  } */
-  /* #swagger.responses[401] = {
-    description: 'Unauthorized',
-    schema: {
-      success: false,
-      message: 'Unauthorized'
-    }
-  } */
-  /* #swagger.responses[500] = {
-    description: 'Internal server error',
-    schema: {
-      success: false,
-      message: 'Internal server error'
-    }
-  } */
-  logout(req, res)
-})
-
-router.get('/check', (req, res) => {
-  /**
-   * #swagger.tags = ['Auth']
-   * #swagger.path = '/auth/check'
-   * #swagger.method = 'get'
-   * #swagger.description = 'Endpoint to check if the user is logged in.'
-   */
-  /* #swagger.responses[200] = {
-    description: 'User is logged in',
-    schema: {
-      authenticated: true,
-      message: 'User is logged in',
-      user: {
-        id: '681fd0c21e98734eb0336be7',
-        userName: 'John Doe',
-        email: 'example@mail.com',
-      }
-    }
-  } */
-  /* #swagger.responses[401] = {
-    description: 'Unauthorized',
-    schema: {
-      authenticated: false,
-      message: 'Unauthorized'
-    }
-  } */
-  /* #swagger.responses[500] = {
-    description: 'Internal server error',
-    schema: {
-      authenticated: false,
-      message: 'Internal server error'
-    }
-  } */
-  verifyToken(req, res)
-})
-
 router.get('/profile', authenticateToken, (req, res) => {
   /**
    * #swagger.tags = ['Auth']
    * #swagger.path = '/auth/profile'
    * #swagger.method = 'get'
    * #swagger.description = 'Endpoint to get the user profile.'
-   * #swagger.security = [{ "cookieAuth": [] }]
+   * #swaagger.headers = {
+    Authorization: {
+      description: 'Bearer token for authentication',
+      type: 'string',
+      required: true
+    }
+   * #swagger.security = [{ "bearerAuth": [] }]
    */
   /* #swagger.responses[200] = {
     description: 'User profile',

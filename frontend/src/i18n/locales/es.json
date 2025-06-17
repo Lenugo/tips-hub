@@ -92,6 +92,9 @@
   "validations": {
     "completeAllFields": "Por favor completa todos los campos",
     "invalidEmail": "El email no es válido",
+    "invalidCredentials": "Correo o contraseña inválidos",
+    "registrationFailed": "Registro fallido. Por favor, inténtalo de nuevo.",
+    "emailAlreadyExists": "Ya existe un usuario con este correo electrónico",
     "passwordTooShort": "La contraseña debe tener al menos 6 caracteres",
     "usernameTooShort": "El nombre de usuario debe tener al menos 3 caracteres",
     "passwordsDoNotMatch": "Las contraseñas no coinciden",

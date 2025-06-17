@@ -67,6 +67,18 @@ export type LoginBody = {
   password: string
 }
 
+export type LoginResponse = {
+  success: boolean,
+  token: string,
+  message: string,
+  user: User
+}
+
+export type StoredUserInfo = {
+  user: User,
+  token: string
+}
+
 export type RegisterBody = {
   email: string,
   password: string,

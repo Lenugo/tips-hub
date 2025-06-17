@@ -2,8 +2,8 @@
 import { ref, computed, onMounted } from 'vue'
 import { useIntersectionObserver } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
-import { useTipsStore } from '../stores/tips'
-import { useUserStore } from '../stores/user'
+import { useTipsStore } from '../store/tips'
+import { useUserStore } from '../store/user'
 import { TipCard, CategoryFilter, AuthModal } from '../components'
 import { useRouter } from 'vue-router'
 
@@ -31,7 +31,7 @@ useIntersectionObserver(
     }
   },
   { threshold: 0.5 }
-);
+)
 
 const handleCategorySelect = (category: string | null) => {
   selectedCategory.value = category
@@ -42,12 +42,12 @@ const handleCategorySelect = (category: string | null) => {
 }
 
 const fetchTips = async () => {
-  isLoading.value = true;
+  isLoading.value = true
   const response = await tipsStore.getAllTips(
     selectedCategory.value || undefined,
     currentPage.value,
     limit.value
-  );
+  )
   
   if (response && response.pagination) {
     hasMorePages.value = currentPage.value < response.pagination.pages

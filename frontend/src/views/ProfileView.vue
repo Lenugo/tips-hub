@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import { useUserStore } from '../stores/user'
-import { useTipsStore } from '../stores/tips'
+import { useUserStore } from '../store/user'
+import { useTipsStore } from '../store/tips'
 import { useRouter } from 'vue-router'
 import { TipCard } from '../components/'
 import { useI18n } from 'vue-i18n'
@@ -32,9 +32,11 @@ const formattedDate = computed(() => {
 onMounted(async () => {
   isLoading.value = true
   
-  // Ensure user is authenticated
   if (!userStore.isLoggedIn) {
-    await userStore.checkAuth()
+    // Redirect to login if not authenticated
+    router.push('/login')
+    isLoading.value = false
+    return
   }
   
   // Get user data from API
