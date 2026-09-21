@@ -69,6 +69,10 @@
   },
   "common": {
     "loading": "Cargando...",
+    "stillLoading": "Esto está tardando más de lo normal…",
+    "loadFailedTitle": "No pudimos cargar Tips Hub",
+    "loadFailedDescription": "El servicio no respondió a tiempo. Revisa tu conexión e inténtalo de nuevo.",
+    "retry": "Reintentar",
     "error": "Error",
     "success": "Éxito",
     "close": "Cerrar",

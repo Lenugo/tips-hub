@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import api from '../utils/api'
+import api, { getApiErrorCode } from '../utils/api'
 import { useUserStore } from './user'
 import { type LikedResponse, type PaginatedResponse, type Tip, type TipResponse, type TipDeleteResponse, NotificationType  } from '@/types'
 
@@ -9,9 +9,12 @@ export const useTipsStore = defineStore('tips', () => {
   const userTips = ref<Tip[]>([])
   const currentTip = ref<Tip | null>(null)
   const isLoading = ref(false)
+  const loadError = ref<string | null>(null)
+  const listPagination = ref<PaginatedResponse<Tip>['pagination'] | null>(null)
   const notificationValues = ref<{ [key: string]: string }>({ message: '', type: '' })
   const categories = ref<string[]>(['career', 'relationships', 'health', 'finance', 'personal-growth', 'productivity', 'education'])
   const userStore = useUserStore()
+  let lastListQuery: { category?: string; page: number; limit: number } = { page: 1, limit: 10 }
   
   const clearTips = () => {
     tips.value = []
@@ -30,7 +33,9 @@ export const useTipsStore = defineStore('tips', () => {
   }
 
   const getAllTips = async (category?: string, page: number = 1, limit: number = 10) => {
+    lastListQuery = { category, page, limit }
     isLoading.value = true
+    loadError.value = null
     notificationValues.value = { message: '', type: '' }
     
     try {
@@ -54,6 +59,8 @@ export const useTipsStore = defineStore('tips', () => {
 
       if (handleErrorTipResponse(status, response.success, 'getting')) {
         tips.value = []
+        loadError.value = 'UNKNOWN'
+        listPagination.value = null
         return { tips: [], pagination: null }
       }
       
@@ -61,7 +68,8 @@ export const useTipsStore = defineStore('tips', () => {
         if (page === 1) {
           tips.value = []
         }
-        return { tips: [], pagination: null }
+        listPagination.value = response.pagination ?? null
+        return { tips: [], pagination: listPagination.value }
       }
       
       let newTips: Tip[] = []
@@ -76,11 +84,14 @@ export const useTipsStore = defineStore('tips', () => {
         tips.value = [...tips.value, ...uniqueNewTips]
       }
       
+      listPagination.value = response.pagination
       return {
         tips: newTips,
         pagination: response.pagination
       }
-    } catch {
+    } catch (error) {
+      loadError.value = getApiErrorCode(error)
+      listPagination.value = null
       notificationValues.value = {
         message: 'Error getting the tips',
         type: NotificationType.Error
@@ -329,9 +340,12 @@ export const useTipsStore = defineStore('tips', () => {
     userTips,
     currentTip,
     isLoading,
+    loadError,
+    listPagination,
     categories,
     notificationValues,
     getAllTips,
+    retryList: () => getAllTips(lastListQuery.category, lastListQuery.page, lastListQuery.limit),
     getUserTips,
     getTipById,
     createTip,

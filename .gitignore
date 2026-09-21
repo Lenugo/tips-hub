@@ -7,3 +7,6 @@ dist
 
 # Render
 .render/
+
+# Local tooling
+.impeccable/

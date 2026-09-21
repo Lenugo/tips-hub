@@ -69,6 +69,10 @@
   },
   "common": {
     "loading": "Loading...",
+    "stillLoading": "This is taking longer than usual…",
+    "loadFailedTitle": "We couldn't load Tips Hub",
+    "loadFailedDescription": "The service didn't respond in time. Check your connection and try again.",
+    "retry": "Try again",
     "error": "Error",
     "success": "Success",
     "close": "Close",

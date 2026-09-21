@@ -1,14 +1,28 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { TheNavbar, MobileNavbar, ToastNotification } from './components'
 import { useTipsStore } from './store/tips'
 import { useUserStore } from './store/user'
 import { NotificationType } from './types'
 import { useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+import { useLoadGuard } from './composables/useLoadGuard'
 
 const tipsStore = useTipsStore()
 const userStore = useUserStore()
 const route = useRoute()
+const { t } = useI18n()
+
+const showBootOverlay = computed(() =>
+  route.name === 'home' &&
+  tipsStore.tips.length === 0 &&
+  (tipsStore.isLoading || !!tipsStore.loadError)
+)
+
+const { phase } = useLoadGuard(
+  () => showBootOverlay.value && tipsStore.isLoading,
+  () => (showBootOverlay.value ? tipsStore.loadError : null)
+)
 
 const notification = ref({
   show: false,
@@ -50,10 +64,34 @@ watch(() => (tipsStore.notificationValues), (newNotification) => {
 <template>
   <div class="min-h-screen flex flex-col">
     <!-- Global loading overlay -->
-    <div v-if="tipsStore.isLoading && route.name === 'home'" class="fixed inset-0 bg-white z-50 flex items-center justify-center">
-      <div class="flex flex-col items-center">
-        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500 mb-4"></div>
-        <p class="text-teal-600 font-medium">Loading...</p>
+    <div
+      v-if="showBootOverlay"
+      class="fixed inset-0 bg-white z-50 flex items-center justify-center px-6"
+      role="status"
+      aria-live="polite"
+    >
+      <div class="flex flex-col items-center text-center max-w-sm">
+        <template v-if="phase !== 'failed'">
+          <div class="animate-pulse flex space-x-2 mb-4">
+            <div class="w-3 h-3 rounded-full bg-teal-400"></div>
+            <div class="w-3 h-3 rounded-full bg-teal-500"></div>
+            <div class="w-3 h-3 rounded-full bg-teal-600"></div>
+          </div>
+          <p class="text-teal-600 font-medium">
+            {{ phase === 'slow' ? t('common.stillLoading') : t('common.loading') }}
+          </p>
+        </template>
+        <template v-else>
+          <h2 class="text-xl font-semibold text-slate-800 mb-2">{{ t('common.loadFailedTitle') }}</h2>
+          <p class="text-slate-600 mb-6">{{ t('common.loadFailedDescription') }}</p>
+          <button
+            type="button"
+            class="btn btn-teal hover:cursor-pointer bg-teal-500 text-white px-4 py-2"
+            @click="tipsStore.retryList"
+          >
+            {{ t('common.retry') }}
+          </button>
+        </template>
       </div>
     </div>
 

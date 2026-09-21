@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useIntersectionObserver } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
 import { useTipsStore } from '../store/tips'
@@ -57,6 +57,12 @@ const fetchTips = async () => {
   
   isLoading.value = false
 }
+
+watch(() => tipsStore.listPagination, (pagination) => {
+  if (pagination) {
+    hasMorePages.value = currentPage.value < pagination.pages
+  }
+})
 
 const loadMoreTips = async () => {
   if (isLoading.value || !hasMorePages.value) return
@@ -129,6 +135,19 @@ const handleEmptyCreate = () => {
       </div>
     </div>
     
+    <!-- Load error (not empty) -->
+    <div v-else-if="tipsStore.loadError && !isLoading" class="text-center py-12">
+      <h3 class="text-xl font-medium text-slate-800 mb-2">{{ t('common.loadFailedTitle') }}</h3>
+      <p class="text-slate-600 mb-4">{{ t('common.loadFailedDescription') }}</p>
+      <button
+        type="button"
+        class="btn btn-teal hover:cursor-pointer bg-teal-500 text-white px-4 py-2"
+        @click="fetchTips"
+      >
+        {{ t('common.retry') }}
+      </button>
+    </div>
+
     <!-- Empty state -->
     <div v-else-if="!isLoading" class="text-center py-12">
       <div v-if="selectedCategory" class="mb-4 text-4xl">🔍</div>

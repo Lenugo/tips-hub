@@ -25,8 +25,13 @@ export const connectDB = async (): Promise<void> => {
     if (!config.uri) {
       throw new Error('Database configuration is missing. Please check your environment variables.');
     }
+
+    mongoose.set('bufferCommands', false)
     
-    await mongoose.connect(config.uri)
+    await mongoose.connect(config.uri, {
+      serverSelectionTimeoutMS: 5000,
+      bufferCommands: false,
+    })
     console.log("✅ Connected to MongoDB successfully")
   } catch (error) {
     console.log("Error connecting to MongoDB", error)
