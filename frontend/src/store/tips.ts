@@ -1,8 +1,23 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import api, { getApiErrorCode } from '../utils/api'
+import { FeedCache } from '../utils/feedCache'
 import { useUserStore } from './user'
 import { type LikedResponse, type PaginatedResponse, type Tip, type TipResponse, type TipDeleteResponse, NotificationType  } from '@/types'
+
+const LIST_TTL_MS = 60_000
+
+interface CachedList {
+  tips: Tip[]
+  pagination: PaginatedResponse<Tip>['pagination']
+}
+
+const listCache = new FeedCache<CachedList>(LIST_TTL_MS)
+const detailCache = new FeedCache<Tip>(LIST_TTL_MS)
+const myTipsCache = new FeedCache<Tip[]>(LIST_TTL_MS)
+
+const listKey = (category?: string, page: number = 1, limit: number = 10) =>
+  `${category ?? 'all'}:${page}:${limit}`
 
 export const useTipsStore = defineStore('tips', () => {
   const tips = ref<Tip[]>([])
@@ -10,6 +25,7 @@ export const useTipsStore = defineStore('tips', () => {
   const currentTip = ref<Tip | null>(null)
   const isLoading = ref(false)
   const loadError = ref<string | null>(null)
+  const hasLoadedOnce = ref(false)
   const listPagination = ref<PaginatedResponse<Tip>['pagination'] | null>(null)
   const notificationValues = ref<{ [key: string]: string }>({ message: '', type: '' })
   const categories = ref<string[]>(['career', 'relationships', 'health', 'finance', 'personal-growth', 'productivity', 'education'])
@@ -32,8 +48,31 @@ export const useTipsStore = defineStore('tips', () => {
     return false
   }
 
-  const getAllTips = async (category?: string, page: number = 1, limit: number = 10) => {
+  const applyListResult = (result: CachedList, page: number) => {
+    if (page === 1) {
+      tips.value = result.tips
+    } else {
+      const existingIds = new Set(tips.value.map(tip => tip.id))
+      const uniqueNewTips = result.tips.filter(tip => !existingIds.has(tip.id))
+      tips.value = [...tips.value, ...uniqueNewTips]
+    }
+    listPagination.value = result.pagination
+    loadError.value = null
+  }
+
+  const getAllTips = async (category?: string, page: number = 1, limit: number = 10, force: boolean = false) => {
+    const key = listKey(category, page, limit)
     lastListQuery = { category, page, limit }
+
+    if (!force) {
+      const cached = listCache.get(key)
+      if (cached) {
+        applyListResult(cached, page)
+        if (page === 1) hasLoadedOnce.value = true
+        return { tips: cached.tips, pagination: cached.pagination }
+      }
+    }
+
     isLoading.value = true
     loadError.value = null
     notificationValues.value = { message: '', type: '' }
@@ -58,6 +97,11 @@ export const useTipsStore = defineStore('tips', () => {
       let response: PaginatedResponse<Tip> = data
 
       if (handleErrorTipResponse(status, response.success, 'getting')) {
+        const stale = listCache.getStale(key)
+        if (stale) {
+          applyListResult(stale, page)
+          return { tips: stale.tips, pagination: stale.pagination }
+        }
         tips.value = []
         loadError.value = 'UNKNOWN'
         listPagination.value = null
@@ -65,6 +109,7 @@ export const useTipsStore = defineStore('tips', () => {
       }
       
       if (!response.data || !response.data.length) {
+        listCache.set(key, { tips: [], pagination: response.pagination ?? null })
         if (page === 1) {
           tips.value = []
         }
@@ -85,11 +130,17 @@ export const useTipsStore = defineStore('tips', () => {
       }
       
       listPagination.value = response.pagination
+      listCache.set(key, { tips: newTips, pagination: response.pagination })
       return {
         tips: newTips,
         pagination: response.pagination
       }
     } catch (error) {
+      const stale = listCache.getStale(key)
+      if (stale) {
+        applyListResult(stale, page)
+        return { tips: stale.tips, pagination: stale.pagination }
+      }
       loadError.value = getApiErrorCode(error)
       listPagination.value = null
       notificationValues.value = {
@@ -99,10 +150,17 @@ export const useTipsStore = defineStore('tips', () => {
       return { tips: [], pagination: null }
     } finally {
       isLoading.value = false
+      hasLoadedOnce.value = true
     }
   }
 
   const getUserTips = async () => {
+    const cached = myTipsCache.get('mine')
+    if (cached) {
+      userTips.value = cached
+      return userTips.value
+    }
+
     isLoading.value = true
     notificationValues.value = { message: '', type: '' }
     
@@ -111,18 +169,30 @@ export const useTipsStore = defineStore('tips', () => {
       let response: TipResponse = data
 
       if (handleErrorTipResponse(status, response.success, 'getting')) {
+        const stale = myTipsCache.getStale('mine')
+        if (stale) {
+          userTips.value = stale
+          return userTips.value
+        }
         userTips.value = []
         return
       }
 
       if (!Array.isArray(response.data) || !response.data.length) {
         userTips.value = []
+        myTipsCache.set('mine', [])
         return
       }
 
       userTips.value = response.data as Tip[]
+      myTipsCache.set('mine', userTips.value)
       return userTips.value
     } catch {
+      const stale = myTipsCache.getStale('mine')
+      if (stale) {
+        userTips.value = stale
+        return userTips.value
+      }
       notificationValues.value = {
         message: 'Error loading your tips',
         type: NotificationType.Error
@@ -134,6 +204,12 @@ export const useTipsStore = defineStore('tips', () => {
   }
 
   const getTipById = async (id: string) => {
+    const cached = detailCache.get(id)
+    if (cached) {
+      currentTip.value = cached
+      return cached
+    }
+
     isLoading.value = true
     notificationValues.value = { message: '', type: '' }
     
@@ -142,13 +218,24 @@ export const useTipsStore = defineStore('tips', () => {
       const response: TipResponse = data
       
       if (handleErrorTipResponse(status, response.success, 'getting')) {
+        const stale = detailCache.getStale(id)
+        if (stale) {
+          currentTip.value = stale
+          return stale
+        }
         currentTip.value = null
         return
       }
       
       currentTip.value = response.data as Tip
-      return response.data as Tip
+      detailCache.set(id, currentTip.value)
+      return currentTip.value
     } catch {
+      const stale = detailCache.getStale(id)
+      if (stale) {
+        currentTip.value = stale
+        return stale
+      }
       notificationValues.value = {
         message: 'Error getting the tip',
         type: NotificationType.Error
@@ -165,6 +252,9 @@ export const useTipsStore = defineStore('tips', () => {
 
     try {
       await api.post('/advices', tipData)
+
+      listCache.clear()
+      myTipsCache.delete('mine')
 
       notificationValues.value = {
         message: 'Tip created successfully',
@@ -194,6 +284,10 @@ export const useTipsStore = defineStore('tips', () => {
         return
       }
 
+      listCache.clear()
+      detailCache.delete(id)
+      myTipsCache.delete('mine')
+
       notificationValues.value = {
         message: 'Tip updated successfully',
         type: NotificationType.Success
@@ -221,6 +315,10 @@ export const useTipsStore = defineStore('tips', () => {
       if (handleErrorTipResponse(status, response.success, 'removing')) {
         return
       }
+
+      listCache.clear()
+      detailCache.delete(id)
+      myTipsCache.delete('mine')
 
       notificationValues.value = {
         message: 'Tip removed successfully',
@@ -312,6 +410,19 @@ export const useTipsStore = defineStore('tips', () => {
           ...userTips.value.slice(userTipIndex + 1)
         ]
       }
+
+      detailCache.updateAll(tip => (tip.id === id ? updateTipLikeStatus(tip) : tip))
+      listCache.updateAll(entry => {
+        if (!entry.tips.some(tip => tip.id === id)) return entry
+        return {
+          ...entry,
+          tips: entry.tips.map(tip => (tip.id === id ? updateTipLikeStatus(tip) : tip))
+        }
+      })
+      myTipsCache.updateAll(list => {
+        if (!list.some(tip => tip.id === id || tip.author?._id === id)) return list
+        return list.map(tip => (tip.id === id || tip.author?._id === id ? updateTipLikeStatus(tip) : tip))
+      })
       
       if (action === 'liked') {
         notificationValues.value = {
@@ -341,11 +452,12 @@ export const useTipsStore = defineStore('tips', () => {
     currentTip,
     isLoading,
     loadError,
+    hasLoadedOnce,
     listPagination,
     categories,
     notificationValues,
     getAllTips,
-    retryList: () => getAllTips(lastListQuery.category, lastListQuery.page, lastListQuery.limit),
+    retryList: () => getAllTips(lastListQuery.category, lastListQuery.page, lastListQuery.limit, true),
     getUserTips,
     getTipById,
     createTip,

@@ -4,7 +4,7 @@ import { useIntersectionObserver } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
 import { useTipsStore } from '../store/tips'
 import { useUserStore } from '../store/user'
-import { TipCard, CategoryFilter, AuthModal } from '../components'
+import { TipCard, CategoryFilter, AuthModal, SkeletonTipCard } from '../components'
 import { useRouter } from 'vue-router'
 
 const { t } = useI18n()
@@ -99,16 +99,19 @@ const handleEmptyCreate = () => {
 </script>
 
 <template>
-  <div class="container mx-auto py-6 px-4">
-    <h1 class="text-2xl font-bold text-slate-900 mb-2">{{ t('home.title') }}</h1>
-    <p class="text-slate-600 mb-6">{{ t('home.description') }}</p>
-    
-    <!-- Categories filter -->
-    <CategoryFilter 
-      :categories="categories" 
-      :selectedCategory="selectedCategory"
-      @select="handleCategorySelect"
-    />
+  <div class="container mx-auto pb-6 flex flex-col min-h-0">
+    <!-- Sticky header: title, description and category filter -->
+    <div class="sticky top-0 z-20 bg-zinc-100/95 backdrop-blur-sm pt-6 pb-2 border-b border-slate-200/70">
+      <h1 class="text-2xl font-bold text-slate-900 mb-2">{{ t('home.title') }}</h1>
+      <p class="text-slate-600 mb-4">{{ t('home.description') }}</p>
+      
+      <!-- Categories filter -->
+      <CategoryFilter 
+        :categories="categories" 
+        :selectedCategory="selectedCategory"
+        @select="handleCategorySelect"
+      />
+    </div>
     
     <!-- Tips feed -->
     <div v-if="tips.length > 0">
@@ -174,12 +177,10 @@ const handleEmptyCreate = () => {
     </div>
     
     <!-- Loading state -->
-    <div v-else class="flex justify-center items-center py-12">
-      <div class="animate-pulse flex space-x-2">
-        <div class="w-3 h-3 rounded-full bg-teal-400"></div>
-        <div class="w-3 h-3 rounded-full bg-teal-500"></div>
-        <div class="w-3 h-3 rounded-full bg-teal-600"></div>
-      </div>
+    <div v-else class="py-6">
+      <TransitionGroup name="fade" tag="div" class="space-y-4">
+        <SkeletonTipCard v-for="i in 5" :key="`skeleton-${i}`" />
+      </TransitionGroup>
     </div>
 
     <!-- Auth Modal -->
@@ -200,5 +201,14 @@ const handleEmptyCreate = () => {
 .list-leave-to {
   opacity: 0;
   transform: translateY(20px);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.25s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

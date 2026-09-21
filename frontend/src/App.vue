@@ -4,20 +4,35 @@ import { TheNavbar, MobileNavbar, ToastNotification } from './components'
 import { useTipsStore } from './store/tips'
 import { useUserStore } from './store/user'
 import { NotificationType } from './types'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useLoadGuard } from './composables/useLoadGuard'
 
 const tipsStore = useTipsStore()
 const userStore = useUserStore()
 const route = useRoute()
+const router = useRouter()
 const { t } = useI18n()
 
 const showBootOverlay = computed(() =>
   route.name === 'home' &&
+  !tipsStore.hasLoadedOnce &&
   tipsStore.tips.length === 0 &&
   (tipsStore.isLoading || !!tipsStore.loadError)
 )
+
+const scrollMemory: Record<string, number> = {}
+const mainScroll = () => document.querySelector('main')
+
+router.beforeEach((to, from) => {
+  const main = mainScroll()
+  if (main) scrollMemory[from.path] = main.scrollTop
+})
+
+const restoreScroll = () => {
+  const main = mainScroll()
+  if (main) main.scrollTop = scrollMemory[route.path] ?? 0
+}
 
 const { phase } = useLoadGuard(
   () => showBootOverlay.value && tipsStore.isLoading,
@@ -62,7 +77,7 @@ watch(() => (tipsStore.notificationValues), (newNotification) => {
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col">
+  <div class="h-dvh flex flex-col overflow-hidden">
     <!-- Global loading overlay -->
     <div
       v-if="showBootOverlay"
@@ -105,9 +120,9 @@ watch(() => (tipsStore.notificationValues), (newNotification) => {
 
     <TheNavbar />
 
-    <main class="flex-grow px-4 md:px-36">
+    <main class="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 md:px-36">
       <router-view v-slot="{ Component }">
-        <transition name="fade" mode="out-in">
+        <transition name="fade" mode="out-in" @after-enter="restoreScroll">
           <component :is="Component" />
         </transition>
       </router-view>
